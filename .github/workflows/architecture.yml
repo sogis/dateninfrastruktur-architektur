@@ -46,10 +46,11 @@ jobs:
           DI_WORKSPACE_REMOTE: ${{ vars.DI_WORKSPACE_READ_REMOTE }}
           DI_HOSTED_PROBE_ENABLED: ${{ vars.DI_HOSTED_PROBE_ENABLED }}
         run: |
+          npm exec --yes --package=npm@11.18.0 -- npm ci
           directory="$(node tooling/ci.mts prepare)"
+          mv node_modules "$directory/node_modules"
           printf '%s\n' "$directory" > "$RUNNER_TEMP/di-architecture-output-path"
           cd "$directory"
-          npm exec --yes --package=npm@11.18.0 -- npm ci
           npm exec --yes --package=npm@11.18.0 -- npm run validate
           npm exec --yes --package=npm@11.18.0 -- npm run test:architecture
           npm exec --yes --package=npm@11.18.0 -- npm run build
@@ -94,9 +95,7 @@ jobs:
           name: architecture-publication
           path: ${{ runner.temp }}/publish
       - id: status
-        run: |
-          npm exec --yes --package=npm@11.18.0 -- npm ci --ignore-scripts
-          tooling/publish-status.sh
+        run: tooling/publish-status.sh
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
         if: steps.status.outputs.publish == 'true'
         with:

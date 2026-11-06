@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
-import { sha256 } from './sources.mts'
 
 const commit = /^[a-f0-9]{40}$/
 const hash = /^[a-f0-9]{64}$/
@@ -97,7 +97,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (next) {
     const bytes = JSON.stringify(next, null, 2) + '\n'
     writeFileSync(output, bytes)
-    console.log('Published status digest: ' + sha256(bytes))
+    console.log('Published status digest: ' + createHash('sha256').update(bytes).digest('hex'))
   } else {
     console.log('Status generation already superseded')
     process.exitCode = 3
