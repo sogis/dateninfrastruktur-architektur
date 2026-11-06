@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "source_set": {
+    "schema_version": 1,
+    "workspace": "14e637821acf137c40fa71705c1a3879cc0dfbdc",
+    "products": {
+      "admin": "d3f924bdb3a9e82def925b8be280171934a80c1b",
+      "jenkins": "06c4e256c870532f86ccca58e329fe103442eef3",
+      "plugin": "df6461b35429805b71763d51429df809b190d713",
+      "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
+      "stack": "3792f878465b6710b532f28f8c4e05c17866d511",
+      "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
+    }
+  },
+  "model_sha256": "7aab3b126fe334fd2c2f552484157794d54be2b8201131bc013fd63d75442d48",
+  "evidence_sha256": "e8eccab6a430b67b9b12bd0d9ae609cdd07e709c48a5469ea954647c69929ce2",
+  "verified_at": "2026-11-06T21:06:54.768693+00:00",
+  "scenarios": [
+    "DYN-DOWNLOAD",
+    "DYN-RIGHTS",
+    "DYN-INGESTION"
+  ],
+  "review": {
+    "specification": "WA",
+    "revision": "2.0",
+    "phase": "WA-9",
+    "verdict": "ABGENOMMEN",
+    "candidate_id": "709548b8-c197-492e-886a-a82bd31faceb",
+    "gate_sha256": "2a3138e3decb997ed344a8db776aed396a52ec682760b76620baa438813cb126",
+    "architecture_commit": "03cf9b1dd06119a016c1390d5a30536c4f90fef5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "model_revision": "DeepSeek-V4.1-Flash-1017"
+  }
+}
