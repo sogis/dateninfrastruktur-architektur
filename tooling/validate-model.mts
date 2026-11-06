@@ -13,6 +13,7 @@ const claim = id => bindings.find(entry => entry.claim_id === id)
 
 export function validateBindings() {
   const claims = new Set()
+  const ruleIds = new Set(rules.map(rule => rule.id))
   const result = new Map()
   for (const binding of bindings) {
     assert(!claims.has(binding.claim_id), 'Duplicate architecture claim')
@@ -20,6 +21,7 @@ export function validateBindings() {
     assert.equal(binding.scope, 'local-compose')
     assert(binding.sources.length && binding.view_ids.length &&
       binding.view_ids.every(id => requiredViews.includes(id)), 'Unbound source or view')
+    assert(binding.check_ids.length && binding.check_ids.every(id => ruleIds.has(id)), 'Claim selects an unregistered rule')
     const anchors = binding.sources.map(resolveBinding)
     const selectors = anchors.map(row => JSON.stringify([row.repo_id, row.path, row.selector]))
     assert.equal(selectors.length, new Set(selectors).size, 'Duplicate source binding')
@@ -27,7 +29,7 @@ export function validateBindings() {
   }
   assert.equal(new Set(rules.map(rule => rule.id)).size, rules.length)
   for (const rule of rules) {
-    assert(rule.id.startsWith('ARCH-') && claim(rule.claim_id), 'Rule lacks a claim')
+    assert(rule.id.startsWith('ARCH-') && claim(rule.claim_id)?.check_ids.includes(rule.id), 'Rule lacks a claim association')
     assert.equal(rule.scope, 'local-compose')
   }
   return result

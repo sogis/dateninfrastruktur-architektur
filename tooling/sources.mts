@@ -10,7 +10,7 @@ export type SourceLock = { schema_version: number; workspace: string; products: 
 export type Selector =
   | { kind: 'json-key'; keys: string[] }
   | { kind: 'json-object'; collection: string; id: string }
-  | { kind: 'symbol' | 'python-symbol'; name: string }
+  | { kind: 'symbol' | 'python-symbol' | 'sql-function'; name: string }
 export type SourceBinding = { repo_id: string; path: string; selector?: Selector }
 type InventoryEntry = { id: string; path: string; profile: string }
 type BoundRepo = { directory: string; sha: string }
@@ -87,6 +87,13 @@ export function selectSource(source: string, selector: Selector) {
       const matches = rows.filter(row => row.id === selector.id)
       assert.equal(matches.length, 1, 'Ambiguous or missing JSON object: ' + selector.id)
       return matches[0]
+    }
+    case 'sql-function': {
+      assert(/^[a-z_]+\.[a-z_]+$/.test(selector.name))
+      const declarations = [...source.matchAll(/\bCREATE(?: OR REPLACE)? FUNCTION\s+([a-z_]+\.[a-z_]+)\s*\(/gi)]
+      assert.equal(declarations.filter(match => match[1] === selector.name).length, 1,
+        'Ambiguous or missing SQL function: ' + selector.name)
+      return selector.name
     }
     case 'symbol':
     case 'python-symbol': {

@@ -35,7 +35,8 @@
         "configuration-checked"
       ],
       "check_ids": [
-        "ARCH-COMPOSE"
+        "ARCH-PG-BOUNDARY",
+        "ARCH-TOPOLOGY"
       ]
     },
     {
@@ -87,7 +88,9 @@
         "configuration-checked"
       ],
       "check_ids": [
-        "ARCH-ADMIN-BOUNDARY"
+        "ARCH-DOWNLOAD-CONFIG",
+        "ARCH-PG-BOUNDARY",
+        "ARCH-TOPOLOGY"
       ]
     },
     {
@@ -186,8 +189,7 @@
         "runtime-checked"
       ],
       "check_ids": [
-        "ARCH-PUBLIC-CATALOG",
-        "ARCH-RIGHTS-RUNTIME"
+        "ARCH-PUBLIC-CATALOG"
       ]
     },
     {
@@ -220,8 +222,7 @@
         "runtime-checked"
       ],
       "check_ids": [
-        "ARCH-RIGHTS-CONFIG",
-        "ARCH-RIGHTS-RUNTIME"
+        "ARCH-RIGHTS-SCOPE"
       ]
     },
     {
@@ -294,8 +295,8 @@
         "runtime-checked"
       ],
       "check_ids": [
-        "ARCH-INGESTION-CONFIG",
-        "ARCH-INGESTION-RUNTIME"
+        "ARCH-INGESTION-EVIDENCE",
+        "ARCH-SUBMISSION-AUTH"
       ]
     },
     {
@@ -336,8 +337,7 @@
         "runtime-checked"
       ],
       "check_ids": [
-        "ARCH-INGESTION-CONFIG",
-        "ARCH-INGESTION-RUNTIME"
+        "ARCH-PUBLICATION"
       ]
     },
     {
@@ -383,7 +383,8 @@
         "configuration-checked"
       ],
       "check_ids": [
-        "ARCH-ANALYTICS-CONFIG"
+        "ARCH-PG-BOUNDARY",
+        "ARCH-TRUTHFUL-SCOPE"
       ]
     },
     {
@@ -426,7 +427,9 @@
         "configuration-checked"
       ],
       "check_ids": [
-        "ARCH-SCHEMA-BASELINE"
+        "ARCH-MODEL-PERSISTENCE",
+        "ARCH-SCHEMA-BASELINE",
+        "ARCH-SCHEMA-VERIFY"
       ]
     },
     {
@@ -501,6 +504,14 @@
           "selector": {
             "kind": "python-symbol",
             "name": "identity_guard"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "db/schema/principal_identity.sql",
+          "selector": {
+            "kind": "sql-function",
+            "name": "di_ops.protect_principal_identity"
           }
         }
       ],

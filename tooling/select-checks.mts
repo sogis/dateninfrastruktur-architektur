@@ -12,6 +12,7 @@ for (const rule of rules) {
 }
 const repoIds = new Set(['workspace', 'architecture', ...Object.keys(lock.products)])
 const dynamics = ['DYN-DOWNLOAD', 'DYN-RIGHTS', 'DYN-INGESTION', 'SCHEMA-BASELINE']
+const schemaChecks = ['ARCH-MODEL-PERSISTENCE', 'ARCH-SCHEMA-BASELINE', 'ARCH-SCHEMA-VERIFY', 'ARCH-IDENTITY-GUARD']
 const docsOnly = /(^README[.]md$|^docs\/.*[.]md$|^models\/constraints[.]md$)/
 const schemaPath = /^(db\/|models\/|scripts\/(setup_explicit|audit_setup|persistence_contract|verify_physical_mapping)[.]py|src\/main\/resources\/cayenne\/|src\/main\/java\/.*\/persistence\/)/
 const infrastructure = /^(compose[.]yaml|scripts\/(compose_runtime|ingestion_test_runtime|test_current_schema)[.]py|services\/postgres\/)/
@@ -46,7 +47,11 @@ export function selectChecks(changes: Change[]) {
     }
     if (change.repo_id === 'admin' && (schemaPath.test(path) || ['Dockerfile', 'build.gradle'].includes(path))
         || change.repo_id === 'stack' && infrastructure.test(path)) {
-      for (const scenario of dynamics) mark(scenario, reason + ' (gemeinsamer Schema-/Laufzeitvertrag)')
+      for (const id of [...schemaChecks, ...dynamics]) mark(id, reason + ' (gemeinsamer Schema-/Laufzeitvertrag)')
+      if (change.repo_id === 'stack') {
+        mark('ARCH-TOPOLOGY', reason + ' (Laufzeitgrenze)')
+        mark('ARCH-PG-BOUNDARY', reason + ' (Datenbankgrenze)')
+      }
     } else if (change.repo_id === 'stack' && storage.test(path)) {
       mark('DYN-DOWNLOAD', reason + ' (Gateway/Origin/Storage)')
       mark('DYN-INGESTION', reason + ' (privater Storage)')
