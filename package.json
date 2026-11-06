@@ -1,0 +1,22 @@
+{
+  "name": "dateninfrastruktur-architektur",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.18.0",
+  "engines": {
+    "node": "22.23.1",
+    "npm": "11.18.0"
+  },
+  "scripts": {
+    "validate": "likec4 validate src",
+    "build": "node tooling/build-site.mjs",
+    "test": "node --test tests/model.test.mjs",
+    "test:browser": "node --test tests/site.test.mjs",
+    "browser:install": "playwright-core install chromium"
+  },
+  "devDependencies": {
+    "likec4": "1.60.0",
+    "playwright-core": "1.65.0"
+  }
+}

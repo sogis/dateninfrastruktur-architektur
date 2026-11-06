@@ -1,0 +1,95 @@
+views {
+  view V01 {
+    title 'Systemkontext'
+    description 'Rollen und die Grenze des lokal untersuchten Systems.'
+    include supplier, reader, steward, analyst, di
+    autoLayout LeftRight
+  }
+
+  view V02 of di {
+    title 'Technische Container'
+    description 'Zehn laufende Dienste. Die gemeinsame PostgreSQL-Instanz hält getrennte logische Datenbanken.'
+    include di.*
+    exclude di.jenkins -> di.keycloak
+    exclude di.admin -> di.keycloak
+    style * { size sm }
+    autoLayout LeftRight 55 40
+  }
+
+  view V03 of di.admin {
+    title 'Admin-Komponenten'
+    description 'Fachliche Verantwortlichkeiten innerhalb desselben Java-Prozesses.'
+    include di.admin.*, di.postgres.managementDb
+    autoLayout LeftRight
+  }
+
+  dynamic view V04 {
+    title 'CSV-Anlieferung'
+    description 'Die atomare Fachannahme in PostgreSQL und die spätere SQL-Projektion sind getrennte Schritte.'
+    supplier -> di.gateway 'Identifiziert sich und öffnet die Anlieferung'
+    di.gateway -> di.jenkins 'Öffnet das Plugin'
+    di.jenkins -> di.admin.submissions 'Fragt aktuelle Anlieferungsberechtigung und Slot an'
+    di.jenkins -> di.jenkins 'Speichert CSV im privaten Jenkins-Spool'
+    di.jenkins -> di.admin.submissions 'Versiegelt Upload über gebundene Grösse, Hash und Spool-Beleg'
+    di.jenkins -> di.admin.submissions 'Beansprucht Dispatch und liest den gebundenen Plan'
+    di.jenkins -> di.jenkins 'GRETL validiert die Eingabe und erzeugt den Snapshot'
+    di.jenkins -> di.garage 'Archiviert Eingabe und schreibt Exporte. Liest Artefakte für die Belege zurück.'
+    di.jenkins -> di.clickhouse 'Schreibt und überprüft Kandidatenausgaben'
+    di.jenkins -> di.admin.publication 'Meldet Abschluss mit gebundenen Integritätsbelegen'
+    di.admin.publication -> di.admin.authz 'Prüft das ursprüngliche Anlieferungsrecht erneut'
+    alt {
+      when 'Recht und Basisversion gültig' {
+        di.admin.publication -> di.postgres.managementDb 'Vergleicht Basisversion und schreibt Fachannahme atomar als COMMITTED'
+        di.admin.publication -> di.jenkins 'SQL-Aktualisierung ausstehend. Identische Wiederholung liefert die vorhandene Annahme.'
+        di.admin.projector -> di.clickhouse 'Veröffentlicht und verifiziert die Projektion getrennt'
+        di.admin.projector -> di.postgres.managementDb 'Quittiert die bestätigte Projektion. Reconciliation wiederholt ausstehende Arbeit.'
+      }
+      else 'Entzug oder veraltete Basis' {
+        di.admin.publication -> di.jenkins 'Lehnt die Fertigstellung ab. Der bisherige Stand bleibt gültig.'
+      }
+    }
+  }
+
+  dynamic view V05 {
+    title 'Berechtigungsworkflow'
+    description 'Fachliche Entscheidungen gelten für den gesamten Datensatz. Anlieferungsbefugnisse sind gesondert.'
+    reader -> di.gateway 'Öffnet den Zugriff für einen publizierten restricted Datensatz'
+    di.gateway -> di.admin.management 'Reicht den authentisierten Antrag weiter'
+    di.admin.management -> di.postgres.managementDb 'Erfasst Antrag am Datensatz'
+    steward -> di.gateway 'Entscheidet oder vergibt direkt mit passender Zuständigkeit'
+    di.gateway -> di.admin.management 'Reicht den Entscheid weiter'
+    di.admin.management -> di.postgres.managementDb 'Schreibt Entscheid, Grant und Audit atomar'
+    steward -> di.gateway 'Widerruft den Grant mit aktueller Zuständigkeit'
+    di.gateway -> di.admin.management 'Reicht den Widerruf weiter'
+    di.admin.management -> di.postgres.managementDb 'Schreibt Widerruf und Audit'
+    di.admin.authz -> di.postgres.managementDb 'Liest das danach aktuelle Recht bei der nächsten Anfrage'
+  }
+
+  dynamic view V06 {
+    title 'Autorisierter Download'
+    description 'Der Katalog liefert den Link. Das Gateway fragt für jeden geschützten Abruf den aktuellen Fachentscheid ab.'
+    reader -> di.gateway 'GET downloads/UUID/Dateiname'
+    di.gateway -> di.keycloak 'Verarbeitet vorhandene Identität für den OIDC-Zugang'
+    di.gateway -> di.admin.authz 'forward-auth auf /internal/authorization/check'
+    di.admin.authz -> di.postgres.managementDb 'Prüft Pfad, Publikationsstatus und bei restricted das aktuelle Leserecht'
+    alt {
+      when 'Fachprüfung erlaubt' {
+        di.admin.authz -> di.gateway 'Gibt den exakten Abruf frei'
+        di.gateway -> di.origin 'Leitet den freigegebenen Abruf weiter'
+        di.origin -> di.garage 'Liest das exakte Objekt mit dem privaten Reader-Zugang'
+        di.origin -> di.gateway 'Liefert den Dateistream'
+        di.gateway -> reader 'Gibt die freigegebene Datei aus'
+      }
+      else 'Ablehnung oder Autorisierungsdienst nicht verfügbar' {
+        di.gateway -> reader 'Antwortet mit Ablehnung oder konfiguriertem Fehlerstatus'
+      }
+    }
+  }
+
+  deployment view V07 {
+    title 'Lokales Deployment'
+    description 'Compose auf dem Entwicklungsrechner. Die Hostports, Volumes und logischen Datenbanken stehen an den Instanzen und im Betriebsnachweis.'
+    includeAncestors true
+    include local.compose.*
+  }
+}

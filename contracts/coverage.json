@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "claims": {
+    "runtime.compose-boundaries": {
+      "scope": "local-compose",
+      "pending": []
+    },
+    "admin.one-process": {
+      "scope": "local-compose",
+      "pending": []
+    },
+    "download.authorization-before-origin": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "catalog.public-views": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "rights.dataset-grant": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "ingestion.bound-submission": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "ingestion.commit-before-projection": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "analytics.technical-connection": {
+      "scope": "local-compose",
+      "pending": []
+    },
+    "schema.explicit-baseline": {
+      "scope": "local-compose",
+      "pending": []
+    }
+  }
+}

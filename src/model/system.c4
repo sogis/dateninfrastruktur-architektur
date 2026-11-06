@@ -1,0 +1,107 @@
+specification {
+  element person { style { shape person } }
+  element system { style { color blue } }
+  element service { style { color blue } }
+  element component { style { color sky } }
+  element database { style { shape cylinder color green } }
+  element store { style { shape storage color green } }
+  deploymentNode environment
+  deploymentNode zone
+}
+
+model {
+  supplier = person 'Datenliefernde'
+  reader = person 'Katalognutzende'
+  steward = person 'Berechtigende und Katalogpflege'
+  analyst = person 'Technische Datennutzende'
+
+  di = system 'Dateninfrastruktur' {
+    description 'Lokaler Stack für Katalog, fachliche Freigaben, CSV-Anlieferung und Datenbereitstellung.'
+    gateway = service 'Gateway' {
+      technology 'Apache APISIX'
+      description 'Loopback-Eingang für Katalog, Admin, Jenkins und geschützte Downloads.'
+    }
+    admin = service 'Admin' {
+      technology 'Java · Spring Boot · Apache Cayenne'
+      description 'Ein Prozess für Management, Fachrechte, Anlieferung und Publikation.'
+      management = component 'Management und Access'
+      authz = component 'Fachautorisierung'
+      submissions = component 'Submission und Execution'
+      publication = component 'Fachannahme'
+      projector = component 'Projektion und Reconciliation'
+      persistence = component 'Persistenz und Audit'
+    }
+    sodata = service 'Sodata' {
+      technology 'Java · PostgreSQL-Sichten'
+      description 'Öffentlicher Katalog und Downloadlinks.'
+    }
+    jenkins = service 'Jenkins' {
+      technology 'Jenkins · Plugin · GRETL'
+      description 'Anlieferungsoberfläche, Job und Runner im Jenkins-Kontext.'
+    }
+    keycloak = service 'Keycloak' {
+      technology 'OpenID Connect'
+      description 'Identitäten, Tokens und Rollen des Identitätsdiensts.'
+    }
+    postgres = database 'PostgreSQL' {
+      technology 'PostgreSQL 16 · PostGIS'
+      description 'Eine Instanz mit separaten logischen Datenbanken und Rollen.'
+      managementDb = database 'Management-DB'
+      keycloakDb = database 'Keycloak-DB'
+      supersetDb = database 'Superset-DB'
+    }
+    clickhouse = database 'ClickHouse' {
+      technology 'ClickHouse SQL'
+      description 'Analytische Kandidaten und veröffentlichte Projektionen.'
+    }
+    garage = store 'Garage' {
+      technology 'Privates S3 · ch.so.daten'
+      description 'Privater Bucket mit getrennten Reader- und Writer-Zugängen.'
+    }
+    origin = service 'Datei-Origin' {
+      technology 'rclone serve HTTP'
+      description 'Interner Read-only-Zugriff auf den privaten Bucket.'
+    }
+    superset = service 'Superset' {
+      technology 'Apache Superset'
+      description 'Lokale Analytics-Oberfläche mit eigener Metadatenbank.'
+    }
+  }
+
+  supplier -> di 'Liefert CSV an'
+  reader -> di 'Sucht und lädt Daten'
+  steward -> di 'Pflegt Katalog und entscheidet über Rechte'
+  analyst -> di 'Analysiert Daten'
+
+  supplier -> di.gateway 'Browser / Jenkins'
+  reader -> di.gateway 'Katalog und Download'
+  steward -> di.gateway 'Management und Access'
+  analyst -> di.superset 'Lokale Analytics-UI'
+  analyst -> di.clickhouse 'Lokaler SQL-Zugang'
+  di.gateway -> di.sodata 'Öffentlicher Katalog'
+  di.gateway -> di.jenkins 'Weiterleitung an die Jenkins-Oberfläche'
+  di.gateway -> di.admin.management 'Management und Access per HTTP'
+  di.gateway -> di.admin.authz 'forward-auth vor dem Download'
+  di.gateway -> di.origin 'Leitet den freigegebenen Download weiter'
+  di.gateway -> di.keycloak 'OIDC und Tokenprüfung'
+  di.admin.management -> di.admin.persistence 'Fachaktionen mit Audit'
+  di.admin.authz -> di.postgres.managementDb 'Liest aktuelle Fachrechte'
+  di.admin.submissions -> di.admin.authz 'Prüft Anlieferungsrecht'
+  di.admin.submissions -> di.admin.persistence 'Bindet Submission, Dispatch und Execution'
+  di.admin.submissions -> di.admin.publication 'Übergibt Abschluss und Belege'
+  di.admin.publication -> di.admin.authz 'Prüft das ursprüngliche Anlieferungsrecht erneut'
+  di.admin.publication -> di.admin.persistence 'Fachcommit und Projektionsauftrag'
+  di.admin.projector -> di.postgres.managementDb 'Liest Auftrag und quittiert bestätigte Projektion'
+  di.admin.projector -> di.clickhouse 'Projiziert und verifiziert den SQL-Stand'
+  di.admin.persistence -> di.postgres.managementDb 'Cayenne, technische Zustände und Audit'
+  di.admin.management -> di.keycloak 'OIDC für Management-Sitzungen'
+  di.jenkins -> di.keycloak 'OIDC und Runner-Serviceidentität'
+  di.jenkins -> di.admin.submissions 'Anlieferung, Claim und gebundener Ausführungsplan'
+  di.jenkins -> di.garage 'Runner archiviert Eingabe und Exporte und prüft per Rücklesen'
+  di.jenkins -> di.clickhouse 'Schreibt und prüft Kandidatenausgaben'
+  di.sodata -> di.postgres.managementDb 'JDBC als di_public auf api_public'
+  di.origin -> di.garage 'Privater S3-Abruf mit Reader-Schlüssel'
+  di.keycloak -> di.postgres.keycloakDb 'Realm- und Identitätsdaten'
+  di.superset -> di.postgres.supersetDb 'Metadaten'
+  di.superset -> di.clickhouse 'Technische Analytics-Verbindung'
+}

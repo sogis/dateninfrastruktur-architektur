@@ -1,0 +1,33 @@
+deployment {
+  local = environment 'Lokaler Entwicklungsrechner' {
+    description 'Ein Compose-Projekt. Veröffentlichte Hostports sind an 127.0.0.1 gebunden.'
+    compose = zone 'Internes Compose-Netz' {
+      instanceOf di.gateway {
+        description 'Loopback GATEWAY_PORT → 9080. Bind mounts für APISIX-Konfiguration und Routen.'
+      }
+      instanceOf di.admin
+      instanceOf di.sodata
+      instanceOf di.jenkins {
+        description 'Internes HTTP. Benanntes jenkins-home-Volume.'
+      }
+      instanceOf di.keycloak {
+        description 'Loopback 18080 → 8080 als Standard. Realm-Definition aus Runtime-Bind-Mount.'
+      }
+      instanceOf di.postgres {
+        description 'Intern 5432. Ein postgres-data-Volume mit Management-, Keycloak- und Superset-Datenbank.'
+      }
+      instanceOf di.clickhouse {
+        description 'Loopback 18123 → 8123 und 19000 → 9000 als Standards. Daten- und Logvolumes.'
+      }
+      instanceOf di.garage {
+        description 'Internes S3. Benannte Garage-Metadaten- und Datenvolumes.'
+      }
+      instanceOf di.origin {
+        description 'Intern 8080. Read-only-Bind-Mount der erzeugten rclone-Konfiguration.'
+      }
+      instanceOf di.superset {
+        description 'Loopback 18088 → 8088 als Standard. Benanntes Superset-Home-Volume.'
+      }
+    }
+  }
+}

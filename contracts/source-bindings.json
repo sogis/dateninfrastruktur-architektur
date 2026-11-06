@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "claim_id": "runtime.compose-boundaries",
+      "view_ids": [
+        "V01",
+        "V02",
+        "V07"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services"
+            ]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "volumes"
+            ]
+          }
+        }
+      ],
+      "required_evidence": [
+        "configuration-checked"
+      ],
+      "check_ids": [
+        "ARCH-COMPOSE"
+      ]
+    },
+    {
+      "claim_id": "admin.one-process",
+      "view_ids": [
+        "V02",
+        "V03"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "admin"
+            ]
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/web/AuthorizationController.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "AuthorizationController"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ExecutionService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "ExecutionService"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/AuditedUnitOfWork.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "AuditedUnitOfWork"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "configuration-checked"
+      ],
+      "check_ids": [
+        "ARCH-ADMIN-BOUNDARY"
+      ]
+    },
+    {
+      "claim_id": "download.authorization-before-origin",
+      "view_ids": [
+        "V02",
+        "V06"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "services/apisix/routes.template.json",
+          "selector": {
+            "kind": "json-object",
+            "collection": "routes",
+            "id": "download"
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "origin"
+            ]
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/web/AuthorizationController.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "AuthorizationController"
+          }
+        }
+      ],
+      "required_evidence": [
+        "configuration-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-DOWNLOAD-CONFIG",
+        "ARCH-DOWNLOAD-RUNTIME"
+      ]
+    },
+    {
+      "claim_id": "catalog.public-views",
+      "view_ids": [
+        "V02",
+        "V06"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "services/apisix/routes.template.json",
+          "selector": {
+            "kind": "json-object",
+            "collection": "routes",
+            "id": "public-catalog"
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "sodata"
+            ]
+          }
+        },
+        {
+          "repo_id": "sodata",
+          "path": "src/main/java/ch/so/agi/datenportal/catalog/database/DatabaseCatalogConfiguration.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "DatabaseCatalogConfiguration"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-PUBLIC-CATALOG",
+        "ARCH-RIGHTS-RUNTIME"
+      ]
+    },
+    {
+      "claim_id": "rights.dataset-grant",
+      "view_ids": [
+        "V03",
+        "V05"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/access/AccessWorkflowService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "AccessWorkflowService"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionAuthorizationService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "SubmissionAuthorizationService"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-RIGHTS-CONFIG",
+        "ARCH-RIGHTS-RUNTIME"
+      ]
+    },
+    {
+      "claim_id": "ingestion.bound-submission",
+      "view_ids": [
+        "V03",
+        "V04"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "SubmissionService"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ExecutionService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "ExecutionService"
+          }
+        },
+        {
+          "repo_id": "plugin",
+          "path": "src/main/java/ch/so/agi/jenkins/delivery/upload/IncomingUploadStore.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "IncomingUploadStore"
+          }
+        },
+        {
+          "repo_id": "plugin",
+          "path": "src/main/java/ch/so/agi/jenkins/delivery/client/IngestionApiClient.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "IngestionApiClient"
+          }
+        },
+        {
+          "repo_id": "topics",
+          "path": "runner/src/main/java/ch/so/agi/dateninfrastruktur/ingest/RunnerMain.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "RunnerMain"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-INGESTION-CONFIG",
+        "ARCH-INGESTION-RUNTIME"
+      ]
+    },
+    {
+      "claim_id": "ingestion.commit-before-projection",
+      "view_ids": [
+        "V03",
+        "V04"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/PublicationService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "PublicationService"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/PublicationReconciler.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "PublicationReconciler"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ClickHousePublicationProjector.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "ClickHousePublicationProjector"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-INGESTION-CONFIG",
+        "ARCH-INGESTION-RUNTIME"
+      ]
+    },
+    {
+      "claim_id": "analytics.technical-connection",
+      "view_ids": [
+        "V02",
+        "V07"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "superset"
+            ]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "clickhouse"
+            ]
+          }
+        }
+      ],
+      "required_evidence": [
+        "configuration-checked"
+      ],
+      "check_ids": [
+        "ARCH-ANALYTICS-CONFIG"
+      ]
+    },
+    {
+      "claim_id": "schema.explicit-baseline",
+      "view_ids": [
+        "V03",
+        "V07"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "admin",
+          "path": "db/schema/manifest.json",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "baseline"
+            ]
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/RuntimeContractVerifier.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "RuntimeContractVerifier"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "configuration-checked"
+      ],
+      "check_ids": [
+        "ARCH-SCHEMA-BASELINE"
+      ]
+    }
+  ]
+}
