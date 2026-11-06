@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "7aab3b126fe334fd2c2f552484157794d54be2b8201131bc013fd63d75442d48",
-  "verified_at": "2026-11-06T19:55:00.029Z",
+  "verified_at": "2026-11-06T19:56:25.511Z",
   "evidence_sha256": null,
   "coverage": [
     "source-checked",
@@ -27,19 +27,16 @@
       "jenkins": "06c4e256c870532f86ccca58e329fe103442eef3",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "7943ee2a21e985700605b8d92203ad033e5ab55c",
+      "stack": "2e3ce9ca8da3d15423fac0c12a27e54137106efb",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-06T19:55:05.236Z",
-  "observed_coverage": [
-    "source-checked",
-    "configuration-checked"
-  ],
-  "comparison_status": "VERIFIED",
-  "comparison_source": "remote-branches",
-  "error": null,
-  "run_id": "42283725869",
-  "workflow_run_number": 6,
+  "observed_at": "2026-11-06T19:56:28.597Z",
+  "observed_coverage": [],
+  "comparison_status": "VIOLATION",
+  "comparison_source": "diagnostic-product-pr",
+  "error": "POLICY_VIOLATION",
+  "run_id": "42283929573",
+  "workflow_run_number": 7,
   "workflow_run_attempt": 1
 }
