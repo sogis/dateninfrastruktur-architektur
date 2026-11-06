@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
+import { dirname, join } from 'node:path'
 
 const commit = /^[a-f0-9]{40}$/
 const hash = /^[a-f0-9]{64}$/
@@ -82,6 +83,24 @@ export function mergeHostedStatus(site, observation, previous, run, attestation 
   }
 }
 
+export function publicRuntimeEvidence(attestation, status) {
+  if (!status.evidence_sha256) return null
+  assert.equal(attestation.evidence_sha256, status.evidence_sha256)
+  assert.deepEqual(sourceSet(attestation.source_set, status.verified_source_set), status.verified_source_set)
+  assert.equal(attestation.model_sha256, status.verified_model_sha256)
+  const review = attestation.review
+  assert(review?.verdict === 'ABGENOMMEN' && hash.test(review.gate_sha256) && commit.test(review.architecture_commit))
+  assert(/^[a-f0-9-]{36}$/.test(review.candidate_id))
+  for (const key of ['specification', 'revision', 'phase', 'provider', 'model', 'model_revision']) {
+    assert(typeof review[key] === 'string' && /^[A-Za-z0-9._/-]{1,100}$/.test(review[key]))
+  }
+  return { schema_version: 1, source_set: status.verified_source_set,
+    model_sha256: status.verified_model_sha256, evidence_sha256: status.evidence_sha256,
+    verified_at: attestation.verified_at, scenarios: dynamicCoverage,
+    review: Object.fromEntries(['verdict', 'gate_sha256', 'architecture_commit', 'candidate_id',
+      'specification', 'revision', 'phase', 'provider', 'model', 'model_revision'].map(key => [key, review[key]])) }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [siteFile, observedFile, previousFile, output, attestationFile] = process.argv.slice(2)
   const read = (path, optional = false) => {
@@ -92,11 +111,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       throw error
     }
   }
+  const attestation = read(attestationFile, true)
   const next = mergeHostedStatus(read(siteFile), read(observedFile, true), read(previousFile, true), {
     number: Number(process.env.GITHUB_RUN_NUMBER), attempt: Number(process.env.GITHUB_RUN_ATTEMPT),
     id: process.env.GITHUB_RUN_ID
-  }, read(attestationFile, true))
+  }, attestation)
   if (next) {
+    const evidence = publicRuntimeEvidence(attestation, next)
+    if (evidence) writeFileSync(join(dirname(output), 'runtime-evidence.json'), JSON.stringify(evidence, null, 2) + '\n')
     const bytes = JSON.stringify(next, null, 2) + '\n'
     writeFileSync(output, bytes)
     console.log('Published status digest: ' + createHash('sha256').update(bytes).digest('hex'))

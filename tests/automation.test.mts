@@ -10,7 +10,7 @@ import { beginStatus, classify, discoverLocal, finishStatus, freshness, normaliz
   reconcile, sourceChanges } from '../tooling/reconcile.mts'
 import { lock, resolveSources, root, sha256, workspaceRoot } from '../tooling/sources.mts'
 import { statusPresentation } from '../tooling/status-view.mjs'
-import { mergeHostedStatus } from '../tooling/hosted-status.mjs'
+import { mergeHostedStatus, publicRuntimeEvidence } from '../tooling/hosted-status.mjs'
 
 test('local reconciliation freezes the same source set and records a no-op', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'di-reconcile-test-'))
@@ -206,4 +206,22 @@ test('hosted status preserves the checked site, rejects stale runs and binds run
   assert.equal(unavailable.comparison_status, 'NOT_VERIFIABLE')
   assert.deepEqual(unavailable.verified_source_set, lock)
   assert.equal(unavailable.evidence_sha256, null)
+})
+
+
+test('public runtime receipt requires an accepted binding and omits private fields', () => {
+  const review = { verdict: 'ABGENOMMEN', gate_sha256: 'a'.repeat(64), architecture_commit: 'b'.repeat(40),
+    candidate_id: '11111111-1111-4111-8111-111111111111', specification: 'WA', revision: '2.0', phase: 'WA-9',
+    provider: 'deepseek', model: 'deepseek-flash', model_revision: 'DeepSeek-V4.1-Flash-1017', private_path: '/private/fixture' }
+  const status = { evidence_sha256: 'c'.repeat(64), verified_source_set: lock, verified_model_sha256: 'd'.repeat(64) }
+  const evidence = { evidence_sha256: status.evidence_sha256, source_set: lock, model_sha256: status.verified_model_sha256,
+    verified_at: '2026-11-06T12:00:00Z', review, private_log: 'must not publish' }
+  const published = publicRuntimeEvidence(evidence, status)
+  assert.equal(published.review.gate_sha256, review.gate_sha256)
+  assert(!JSON.stringify(published).includes('private'))
+  assert.equal(publicRuntimeEvidence(evidence, { ...status, evidence_sha256: null }), null)
+  assert.throws(() => publicRuntimeEvidence({ ...evidence, review: { ...review, verdict: 'NACHARBEIT' } }, status))
+  assert.throws(() => publicRuntimeEvidence({ ...evidence, evidence_sha256: 'e'.repeat(64) }, status))
+  assert.throws(() => publicRuntimeEvidence({ ...evidence, model_sha256: 'f'.repeat(64) }, status))
+  assert.throws(() => publicRuntimeEvidence({ ...evidence, source_set: { ...lock, workspace: 'f'.repeat(40) } }, status))
 })
