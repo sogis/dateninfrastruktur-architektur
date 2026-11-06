@@ -54,11 +54,13 @@ export function mergeHostedStatus(site, observation, previous, run, attestation 
 
   let evidence = null
   if (attestation) {
-    assert.deepEqual(sourceSet(attestation.source_set, basis), basis, 'Runtime evidence belongs to a different source set')
-    assert.equal(attestation.model_sha256, site.modelSha256, 'Runtime evidence belongs to a different model')
-    assert(hash.test(attestation.evidence_sha256) && Number.isFinite(Date.parse(attestation.verified_at)))
+    const evidenceSource = sourceSet(attestation.source_set, basis)
+    assert(hash.test(attestation.model_sha256) && hash.test(attestation.evidence_sha256)
+      && Number.isFinite(Date.parse(attestation.verified_at)))
     assert.deepEqual(attestation.scenarios, dynamicCoverage)
-    evidence = attestation.evidence_sha256
+    if (JSON.stringify(evidenceSource) === JSON.stringify(basis) && attestation.model_sha256 === site.modelSha256) {
+      evidence = attestation.evidence_sha256
+    }
   }
 
   return {

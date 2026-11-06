@@ -42,7 +42,7 @@ Dispatch-Absender dieser App. [GitHub REST Dispatch](https://docs.github.com/en/
 
 ## Nachweisumfang
 
-Der Hosted-Runner führt Quell-, Konfigurations- und Modellprüfungen aus.
+Diesen Hosted-Stand belegen Quell-, Konfigurations- und Modellprüfungen.
 Dynamische Nachweise brauchen die gepinnte GRETL-/Jenkins-Toolchain, deren
 Offline-Bundle sowie einen isolierten Compose-Kontext. Ein geprüfter
 Laufzeitnachweis kann als bereinigter Digest mit exaktem Quellsatz und
