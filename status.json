@@ -8,16 +8,19 @@
       "jenkins": "06c4e256c870532f86ccca58e329fe103442eef3",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "7943ee2a21e985700605b8d92203ad033e5ab55c",
+      "stack": "3792f878465b6710b532f28f8c4e05c17866d511",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
   "verified_model_sha256": "7aab3b126fe334fd2c2f552484157794d54be2b8201131bc013fd63d75442d48",
-  "verified_at": "2026-11-06T21:08:04.257Z",
-  "evidence_sha256": null,
+  "verified_at": "2026-11-06T21:16:16.475Z",
+  "evidence_sha256": "e8eccab6a430b67b9b12bd0d9ae609cdd07e709c48a5469ea954647c69929ce2",
   "coverage": [
     "source-checked",
-    "configuration-checked"
+    "configuration-checked",
+    "DYN-DOWNLOAD",
+    "DYN-RIGHTS",
+    "DYN-INGESTION"
   ],
   "observed_source_set": {
     "schema_version": 1,
@@ -31,12 +34,15 @@
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-06T21:08:10.365Z",
-  "observed_coverage": [],
-  "comparison_status": "NOT_VERIFIABLE",
+  "observed_at": "2026-11-06T21:16:22.268Z",
+  "observed_coverage": [
+    "source-checked",
+    "configuration-checked"
+  ],
+  "comparison_status": "VERIFIED",
   "comparison_source": "remote-branches",
-  "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "42294112309",
-  "workflow_run_number": 9,
+  "error": null,
+  "run_id": "42295254168",
+  "workflow_run_number": 11,
   "workflow_run_attempt": 1
 }
