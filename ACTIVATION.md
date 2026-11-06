@@ -53,3 +53,11 @@ Laufzeitabdeckung offen. Die Website veröffentlicht keine Rohbelege.
 `npm run reconcile -- --proposal` erzeugt lokal einen begrenzten Vorschlag
 für legitime Drift. Der Architektur-Maintainer lässt semantische Änderungen
 unabhängig prüfen und gibt sie über den geschützten Hauptbranch frei.
+
+Der geschützte Hauptbranch kann die freigegebene, bereinigte Attestation
+in `contracts/hosted-runtime-evidence.json` führen. Der Publikationsjob
+bindet sie an den vollständigen Quellsatz und Modellhash. Eine passende
+Abnahme wird auf Pages als `runtime-evidence.json` mit Kandidatenkennung,
+Revieweridentität und Gate-/Belegdigest verlinkt. Private Logs, lokale
+Pfade und Zugangsdaten werden nicht übernommen. Bei Quellen- oder
+Modelldrift gilt die Attestation nicht für den neu beobachteten Stand.

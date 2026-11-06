@@ -40,8 +40,11 @@ if (typeof document !== 'undefined') {
     }))
     const state = statusPresentation(status, site.sourceLock, site.modelSha256)
     document.querySelector('#freshness').textContent = state.label
-    if (state.runtime) document.querySelector('#runtime-status').textContent =
-      'Ausgewählte lokale Download-, Rechte- und Anlieferungsnachweise gelten für den angezeigten Quellstand.'
+    if (state.runtime) {
+      document.querySelector('#runtime-status').textContent =
+        'Ausgewählte lokale Download-, Rechte- und Anlieferungsnachweise gelten für den angezeigten Quellstand.'
+      document.querySelector('#runtime-evidence').hidden = false
+    }
     if (state.comparisonSource === 'remote-branches') document.querySelector('#remote-status').textContent =
       'Die Tabelle der Beobachtung zeigt den zuletzt verglichenen Remote-Stand.'
     if (state.comparisonSource === 'diagnostic-product-pr') document.querySelector('#remote-status').textContent =

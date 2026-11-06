@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { copyFile, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { lock, modelAt, modelFingerprint, modelViews, root } from './model.mts'
 import { verifyArchitecture } from './validate-model.mts'
+
+// A new static build must not inherit a previous publication's status/receipt.
+for (const file of ['status.json', 'runtime-evidence.json']) await rm(join(root, 'dist', file), { force: true })
 
 const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
 const model = await modelAt()
@@ -65,6 +68,7 @@ await writeFile(join(root, 'dist/index.html'), `<!doctype html>
 <p><strong>Quellen und Modell geprüft</strong> · Modell ${escape(pkg.version)} · LikeC4 ${escape(pkg.devDependencies.likec4)}</p>
 <p id="freshness"><strong>Aktualität unbekannt</strong></p>
 <p class="details">Prüfzeitpunkt <time datetime="${checkedAt}">${checkedLabel}</time>. <span id="runtime-status">Ausgewählte Laufzeitnachweise stehen aus.</span> <span id="remote-status">Remote-SHAs wurden noch nicht verglichen.</span></p>
+<p><a id="runtime-evidence" href="./runtime-evidence.json" hidden>Gebundene Laufzeitabnahme</a></p>
 <table><thead><tr><th>Repository</th><th>Geprüfter Quellcommit</th></tr></thead><tbody>${commits}</tbody></table>
 <div id="observation" hidden><p>Zuletzt beobachteter Quellenstand <time></time></p><ul></ul></div></section>
 <section aria-labelledby="scope"><h2 id="scope">Betriebsgrenze</h2>
