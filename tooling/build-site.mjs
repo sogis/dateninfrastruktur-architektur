@@ -1,12 +1,14 @@
+import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { checkArchitecture, checkFlowSemantics, lock, modelAt, modelViews, root } from './model.mjs'
+import { lock, modelAt, modelViews, root } from './model.mts'
+import { verifyArchitecture } from './validate-model.mts'
 
 const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
 const model = await modelAt()
-checkArchitecture(model)
-checkFlowSemantics(model)
+const verification = await verifyArchitecture(undefined, model)
+assert(verification.results.every(rule => rule.configuration === 'checked'), 'Architecture configuration check failed')
 const views = modelViews(model)
 const checkedAt = new Date().toISOString()
 const checkedLabel = new Intl.DateTimeFormat('de-CH', {
@@ -68,5 +70,5 @@ await writeFile(join(root, 'dist/index.html'), `<!doctype html>
 </main></body></html>\n`)
 await writeFile(join(root, 'dist/verification.json'), JSON.stringify({
   scope: 'local-compose', checkedAt, modelVersion: pkg.version, likec4: pkg.devDependencies.likec4,
-  sourceLock: lock, runtime: 'unverified', remoteComparison: null
+  sourceLock: lock, runtime: 'unverified', remoteComparison: null, rules: verification.results
 }, null, 2) + '\n')

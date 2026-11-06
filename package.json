@@ -11,12 +11,15 @@
   "scripts": {
     "validate": "likec4 validate src",
     "build": "node tooling/build-site.mjs",
-    "test": "node --test tests/model.test.mjs",
+    "test": "node --test tests/model.test.mts tests/contracts.test.mts",
     "test:browser": "node --test tests/site.test.mjs",
-    "browser:install": "playwright-core install chromium"
+    "browser:install": "playwright-core install chromium",
+    "check": "node tooling/validate-model.mts",
+    "select": "node tooling/select-checks.mts"
   },
   "devDependencies": {
     "likec4": "1.60.0",
-    "playwright-core": "1.65.0"
+    "playwright-core": "1.65.0",
+    "yaml": "2.9.1"
   }
 }

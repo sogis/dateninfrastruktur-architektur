@@ -18,3 +18,9 @@ Das explizite Freshsetup importiert die aktuellen INTERLIS-Modelle mit gepinntem
 ## Prüfstand
 
 Der lokale Quellenlock pinnt alle untersuchten Produktstände. Die statische Website zeigt den Umfang, die Modellversion und den Prüfzeitpunkt des Builds. Ihre Quell- und Konfigurationsaussagen beruhen auf diesem Satz. Laufzeitnachweise für die ausgewählten Architekturabläufe werden separat geführt. Ein Remotevergleich liegt in diesem lokalen Build nicht vor. [Prüfdeckung](../contracts/coverage.json)
+
+## Testauswahl
+
+`npm run check` prüft den gepinnten Quellenstand, die Modellgrenzen und die festen Regeln. Der Bericht trennt die statische Prüfung von ausstehenden Laufzeitnachweisen. Die Faktenextraktion liest Compose mit synthetischen Werten direkt aus dem gebundenen Git-Commit.
+
+`npm run select -- changes.json` nimmt eine Liste von Objekten mit `repo_id` und `path` entgegen und gibt betroffene Checks mit Gründen aus. Gemeinsame Schema- und Laufzeitänderungen betreffen mehrere Szenarien. Unbekannte Pfade ergeben `UNKNOWN` und benötigen einen Quellenabgleich. Eine reine Markdown-Änderung wählt nur die Dokumentationsprüfung.

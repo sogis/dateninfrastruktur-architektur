@@ -3,7 +3,7 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { assertDownloadBoundary, checkArchitecture, checkFlowSemantics, modelAt, modelViews, requiredViews, root } from '../tooling/model.mjs'
+import { assertDownloadBoundary, checkArchitecture, checkFlowSemantics, modelAt, modelViews, requiredViews, root } from '../tooling/model.mts'
 
 test('seven views resolve to the same bound current architecture', async () => {
   const model = await modelAt()

@@ -46,6 +46,18 @@
     "schema.explicit-baseline": {
       "scope": "local-compose",
       "pending": []
+    },
+    "storage.private-reader-writer": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
+    },
+    "schema.identity-immutable": {
+      "scope": "local-compose",
+      "pending": [
+        "runtime-checked"
+      ]
     }
   }
 }

@@ -4,7 +4,7 @@ import { createServer } from 'node:http'
 import { extname, join, resolve } from 'node:path'
 import { test } from 'node:test'
 import { chromium } from 'playwright-core'
-import { lock, modelAt, modelViews, root } from '../tooling/model.mjs'
+import { lock, modelAt, modelViews, root } from '../tooling/model.mts'
 
 const types = { '.css': 'text/css', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml' }
 

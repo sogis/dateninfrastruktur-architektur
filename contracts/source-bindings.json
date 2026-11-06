@@ -125,6 +125,14 @@
             "kind": "symbol",
             "name": "AuthorizationController"
           }
+        },
+        {
+          "repo_id": "stack",
+          "path": "scripts/compose_runtime.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "render"
+          }
         }
       ],
       "required_evidence": [
@@ -263,6 +271,22 @@
             "kind": "symbol",
             "name": "RunnerMain"
           }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ResultEvidenceValidator.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "ResultEvidenceValidator"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionAuthorizationService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "SubmissionAuthorizationService"
+          }
         }
       ],
       "required_evidence": [
@@ -345,6 +369,14 @@
               "clickhouse"
             ]
           }
+        },
+        {
+          "repo_id": "stack",
+          "path": "services/superset/configure_database.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "main"
+          }
         }
       ],
       "required_evidence": [
@@ -379,6 +411,14 @@
             "kind": "symbol",
             "name": "RuntimeContractVerifier"
           }
+        },
+        {
+          "repo_id": "admin",
+          "path": "scripts/setup_explicit.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "verify_existing"
+          }
         }
       ],
       "required_evidence": [
@@ -387,6 +427,89 @@
       ],
       "check_ids": [
         "ARCH-SCHEMA-BASELINE"
+      ]
+    },
+    {
+      "claim_id": "storage.private-reader-writer",
+      "view_ids": [
+        "V02",
+        "V06",
+        "V07"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "garage-setup"
+            ]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "services",
+              "origin"
+            ]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "scripts/compose_runtime.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "render"
+          }
+        }
+      ],
+      "required_evidence": [
+        "configuration-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-STORAGE"
+      ]
+    },
+    {
+      "claim_id": "schema.identity-immutable",
+      "view_ids": [
+        "V03",
+        "V05"
+      ],
+      "scope": "local-compose",
+      "sources": [
+        {
+          "repo_id": "admin",
+          "path": "db/schema/manifest.json",
+          "selector": {
+            "kind": "json-key",
+            "keys": [
+              "steps"
+            ]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "scripts/test_current_schema.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "identity_guard"
+          }
+        }
+      ],
+      "required_evidence": [
+        "source-checked",
+        "runtime-checked"
+      ],
+      "check_ids": [
+        "ARCH-IDENTITY-GUARD"
       ]
     }
   ]

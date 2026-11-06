@@ -1,46 +1,11 @@
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { LikeC4 } from 'likec4'
+import { extractComposeFacts } from './facts.mts'
+import { lock, pinnedSource, resolveBinding, root, selectSource } from './sources.mts'
 
-export const root = fileURLToPath(new URL('..', import.meta.url))
-const workspace = dirname(root.replace(/\/$/, ''))
-const git = (directory, argument) => execFileSync('git', ['-C', directory, 'show', argument], { encoding: 'utf8' })
-export const lock = JSON.parse(readFileSync(join(root, 'sources.lock.json'), 'utf8'))
-const inventory = JSON.parse(git(workspace, lock.workspace + ':repositories.json'))
-
-export function pinnedSource({ repo_id: id, path }) {
-  assert(path.split('/').every(part => part && part !== '..' && part !== '.'))
-  const repo = inventory.repositories.find(entry => entry.id === id)
-  assert(repo && /^[a-f0-9]{40}$/.test(lock.products[id]), 'Unknown bound repository: ' + id)
-  return git(join(workspace, repo.path), lock.products[id] + ':' + path)
-}
-
-export function selectSource(source, selector) {
-  switch (selector.kind) {
-    case 'json-key': {
-      const selected = selector.keys.reduce((value, key) => value?.[key], JSON.parse(source))
-      assert(selected !== undefined, 'Missing JSON selector: ' + selector.keys.join('/'))
-      return selected
-    }
-    case 'json-object': {
-      const matches = JSON.parse(source)[selector.collection].filter(row => row.id === selector.id)
-      assert.equal(matches.length, 1, 'Ambiguous or missing JSON object: ' + selector.id)
-      return matches[0]
-    }
-    case 'symbol': {
-      assert(/^[A-Za-z_$][\w$]*$/.test(selector.name))
-      const declarations = Array.from(source.matchAll(/\b(?:class|record|interface|enum)\s+([A-Za-z_$][\w$]*)\b/g))
-      assert.equal(declarations.filter(match => match[1] === selector.name).length, 1,
-        'Ambiguous or missing declaration: ' + selector.name)
-      return selector.name
-    }
-    default:
-      throw new Error('Unknown source selector: ' + selector.kind)
-  }
-}
+export { lock, root }
 
 export async function modelAt(source = join(root, 'src')) {
   const language = await LikeC4.fromWorkspace(source, { logger: false })
@@ -63,8 +28,8 @@ export function assertDownloadBoundary(model) {
 }
 
 export function checkArchitecture(model) {
-  const compose = JSON.parse(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))
-  const running = Object.entries(compose.services).filter(([, service]) => !service.profiles?.length).map(([name]) => 'di.' + name)
+  const compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))
+  const running = Object.entries(compose.services).filter(([, service]) => service.classification === 'runtime').map(([name]) => 'di.' + name)
   const nodes = id => [...model.view(id).nodes()].map(node => node.id).sort()
   assert.deepEqual([...model.children('di')].map(node => node.id).sort(), running.sort())
   assert.deepEqual(nodes('V02'), running)
@@ -83,7 +48,7 @@ export function checkArchitecture(model) {
   for (const claim of bindings.claims) {
     assert(claim.view_ids.every(id => requiredViews.includes(id)))
     assert(claim.check_ids.every(id => id.startsWith('ARCH-')))
-    for (const source of claim.sources) selectSource(pinnedSource(source), source.selector)
+    for (const source of claim.sources) resolveBinding(source)
   }
 }
 

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "ARCH-TOPOLOGY",
+      "claim_id": "runtime.compose-boundaries",
+      "scope": "local-compose",
+      "runtime": null
+    },
+    {
+      "id": "ARCH-PG-BOUNDARY",
+      "claim_id": "runtime.compose-boundaries",
+      "scope": "local-compose",
+      "runtime": null
+    },
+    {
+      "id": "ARCH-DOWNLOAD-CONFIG",
+      "claim_id": "download.authorization-before-origin",
+      "scope": "local-compose",
+      "runtime": null
+    },
+    {
+      "id": "ARCH-DOWNLOAD-RUNTIME",
+      "claim_id": "download.authorization-before-origin",
+      "scope": "local-compose",
+      "runtime": "DYN-DOWNLOAD"
+    },
+    {
+      "id": "ARCH-PUBLIC-CATALOG",
+      "claim_id": "catalog.public-views",
+      "scope": "local-compose",
+      "runtime": "DYN-RIGHTS"
+    },
+    {
+      "id": "ARCH-STORAGE",
+      "claim_id": "storage.private-reader-writer",
+      "scope": "local-compose",
+      "runtime": "DYN-DOWNLOAD"
+    },
+    {
+      "id": "ARCH-SUBMISSION-AUTH",
+      "claim_id": "ingestion.bound-submission",
+      "scope": "local-compose",
+      "runtime": "DYN-INGESTION"
+    },
+    {
+      "id": "ARCH-INGESTION-EVIDENCE",
+      "claim_id": "ingestion.bound-submission",
+      "scope": "local-compose",
+      "runtime": "DYN-INGESTION"
+    },
+    {
+      "id": "ARCH-PUBLICATION",
+      "claim_id": "ingestion.commit-before-projection",
+      "scope": "local-compose",
+      "runtime": "DYN-INGESTION"
+    },
+    {
+      "id": "ARCH-RIGHTS-SCOPE",
+      "claim_id": "rights.dataset-grant",
+      "scope": "local-compose",
+      "runtime": "DYN-RIGHTS"
+    },
+    {
+      "id": "ARCH-MODEL-PERSISTENCE",
+      "claim_id": "schema.explicit-baseline",
+      "scope": "local-compose",
+      "runtime": "SCHEMA-BASELINE"
+    },
+    {
+      "id": "ARCH-TRUTHFUL-SCOPE",
+      "claim_id": "analytics.technical-connection",
+      "scope": "local-compose",
+      "runtime": null
+    },
+    {
+      "id": "ARCH-SCHEMA-BASELINE",
+      "claim_id": "schema.explicit-baseline",
+      "scope": "local-compose",
+      "runtime": "SCHEMA-BASELINE"
+    },
+    {
+      "id": "ARCH-SCHEMA-VERIFY",
+      "claim_id": "schema.explicit-baseline",
+      "scope": "local-compose",
+      "runtime": "SCHEMA-BASELINE"
+    },
+    {
+      "id": "ARCH-IDENTITY-GUARD",
+      "claim_id": "schema.identity-immutable",
+      "scope": "local-compose",
+      "runtime": "SCHEMA-BASELINE"
+    }
+  ]
+}

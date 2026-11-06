@@ -8,6 +8,7 @@ Mit Node 22.23.1 und npm 11.18.0 aus diesem Repository ausführen.
 npm ci
 npm run validate
 npm test
+npm run check
 npm run build
 python3 -m http.server --bind 127.0.0.1 4173 --directory dist
 ```
