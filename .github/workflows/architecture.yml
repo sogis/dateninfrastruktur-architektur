@@ -15,6 +15,10 @@ on:
       head:
         description: Exact 40-character product PR head SHA
         type: string
+      publish_probe:
+        description: Publish a labelled diagnostic observation when explicitly enabled
+        type: boolean
+        default: false
   schedule:
     - cron: '31 3 * * *'
 
@@ -28,6 +32,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -39,6 +44,7 @@ jobs:
       - name: Verify the trusted frozen source set
         env:
           DI_WORKSPACE_REMOTE: ${{ vars.DI_WORKSPACE_READ_REMOTE }}
+          DI_HOSTED_PROBE_ENABLED: ${{ vars.DI_HOSTED_PROBE_ENABLED }}
         run: |
           directory="$(node tooling/ci.mts prepare)"
           printf '%s\n' "$directory" > "$RUNNER_TEMP/di-architecture-output-path"
@@ -48,19 +54,65 @@ jobs:
           npm exec --yes --package=npm@11.18.0 -- npm run test:architecture
           npm exec --yes --package=npm@11.18.0 -- npm run build
           node tooling/ci.mts run
-      - name: Collect only public-safe status
-        if: always()
+      - name: Collect checked site and separate observation
+        if: always() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && (github.event.inputs.product == '' || github.event.inputs.publish_probe == 'true')
         run: |
-          mkdir -p "$RUNNER_TEMP/di-public-status"
+          mkdir -p "$RUNNER_TEMP/publish/observation"
           if test -f "$RUNNER_TEMP/di-architecture-output-path"; then
             directory="$(cat "$RUNNER_TEMP/di-architecture-output-path")"
+            if test -f "$directory/dist/verification.json"; then
+              mv "$directory/dist" "$RUNNER_TEMP/publish/site"
+            fi
             if test -f "$directory/.runtime/status.json"; then
-              cp "$directory/.runtime/status.json" "$RUNNER_TEMP/di-public-status/status.json"
+              cp "$directory/.runtime/status.json" "$RUNNER_TEMP/publish/observation/status.json"
             fi
           fi
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        if: always()
+        if: always() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && (github.event.inputs.product == '' || github.event.inputs.publish_probe == 'true')
         with:
-          name: architecture-observation
-          path: ${{ runner.temp }}/di-public-status
+          name: architecture-publication
+          path: ${{ runner.temp }}/publish
           if-no-files-found: ignore
+          retention-days: 14
+
+  publish:
+    needs: verify
+    if: always() && !cancelled() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && (github.event.inputs.product == '' || github.event.inputs.publish_probe == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    outputs:
+      publish: ${{ steps.status.outputs.publish }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: architecture-publication
+          path: ${{ runner.temp }}/publish
+      - id: status
+        run: |
+          npm exec --yes --package=npm@11.18.0 -- npm ci --ignore-scripts
+          tooling/publish-status.sh
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        if: steps.status.outputs.publish == 'true'
+        with:
+          path: ${{ runner.temp }}/publish/site
+
+  deploy:
+    needs: publish
+    if: always() && needs.publish.result == 'success' && needs.publish.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e

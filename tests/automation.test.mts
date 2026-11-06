@@ -10,6 +10,7 @@ import { beginStatus, classify, discoverLocal, finishStatus, freshness, normaliz
   reconcile, sourceChanges } from '../tooling/reconcile.mts'
 import { lock, resolveSources, root, sha256, workspaceRoot } from '../tooling/sources.mts'
 import { statusPresentation } from '../tooling/status-view.mjs'
+import { mergeHostedStatus } from '../tooling/hosted-status.mjs'
 
 test('local reconciliation freezes the same source set and records a no-op', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'di-reconcile-test-'))
@@ -173,4 +174,34 @@ test('workflow and event boundaries reject untrusted permissions and inputs', as
   }
   assert.equal(workflow.jobs.verify.steps[0].with['persist-credentials'], false)
   assert.match(workflow.jobs.verify.steps[0].with.ref, /pull_request[.]base[.]sha/)
+  assert.deepEqual(workflow.jobs.publish.permissions, { contents: 'write' })
+  assert.match(workflow.jobs.publish.if, /github.event_name != 'pull_request'/)
+  assert.deepEqual(workflow.jobs.deploy.permissions, { pages: 'write', 'id-token': 'write' })
+  for (const job of Object.values(workflow.jobs)) {
+    for (const step of job.steps) if (step.uses) assert(/@[a-f0-9]{40}$/.test(step.uses))
+  }
+})
+
+test('hosted status preserves the checked site, rejects stale runs and binds runtime evidence', () => {
+  const modelSha = 'a'.repeat(64)
+  const checkedAt = '2026-11-06T12:00:00Z'
+  const site = { sourceLock: lock, checkedAt, scope: 'local-compose', modelSha256: modelSha,
+    rules: [{ configuration: 'checked' }] }
+  const candidate = { ...lock, products: { ...lock.products, stack: 'b'.repeat(40) } }
+  const observation = { observed_source_set: candidate, observed_at: checkedAt,
+    comparison_status: 'VIOLATION', comparison_source: 'diagnostic-product-pr' }
+  const run = { id: '3', number: 3, attempt: 1 }
+  const evidence = { source_set: lock, model_sha256: modelSha, evidence_sha256: 'c'.repeat(64), verified_at: checkedAt,
+    scenarios: ['DYN-DOWNLOAD', 'DYN-RIGHTS', 'DYN-INGESTION'] }
+  const published = mergeHostedStatus(site, observation, null, run, evidence)
+  assert.deepEqual(published.verified_source_set, lock)
+  assert.deepEqual(published.observed_source_set, candidate)
+  assert.equal(published.comparison_status, 'VIOLATION')
+  assert.equal(mergeHostedStatus(site, observation, published, { ...run, number: 2 }), null)
+  assert.throws(() => mergeHostedStatus(site, observation, null, run, { ...evidence, source_set: candidate }))
+  assert.throws(() => mergeHostedStatus(site, { ...observation, comparison_status: 'VERIFIED' }, null, run))
+  const unavailable = mergeHostedStatus(site, null, published, { ...run, attempt: 2 })
+  assert.equal(unavailable.comparison_status, 'NOT_VERIFIABLE')
+  assert.deepEqual(unavailable.verified_source_set, lock)
+  assert.equal(unavailable.evidence_sha256, null)
 })

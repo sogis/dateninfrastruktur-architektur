@@ -19,7 +19,8 @@ type Status = {
   generation: number; run_id: string; comparison_status: string
   verified_source_set: SourceSet | null; verified_at: string | null
   observed_source_set: SourceSet | null; observed_at: string | null
-  coverage: string[]; observed_coverage: string[]; comparison_source: 'local-heads' | 'remote-branches'
+  coverage: string[]; observed_coverage: string[]
+  comparison_source: 'local-heads' | 'remote-branches' | 'diagnostic-product-pr'
   error: string | null; proposal_ref: string | null
   evidence_sha256: string | null; relevant_input_sha256: string | null
   observed_input_sha256: string | null

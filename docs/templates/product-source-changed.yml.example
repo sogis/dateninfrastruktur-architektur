@@ -4,13 +4,14 @@ name: Signal protected source changes
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   signal:
-    if: github.ref_protected
+    if: github.ref == 'refs/heads/main' && github.ref_protected
     runs-on: ubuntu-latest
     steps:
       - id: dispatch-token

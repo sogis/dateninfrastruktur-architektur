@@ -1,25 +1,55 @@
-# Remote-Aktivierung
+# GitHub-Automatisierung und Hosting
 
-Status `REMOTE_NOT_ACTIVATED`. Die Architektur hat lokal ein eigenes Repository. Das tatsächliche Workspace-Remote ist weiterhin `sogis/dateninfrastruktur-checkout`. Für `sogis/dateninfrastruktur-architektur` ist die GitHub-Anlage und für den Workspace-Namen eine separate Freigabe erforderlich. Das Inventar enthält die tatsächlichen Remotes.
+Das Inventar bindet `sogis/dateninfrastruktur-workspace`, die sechs
+Produktrepos und `sogis/dateninfrastruktur-architektur`. Der veröffentlichte
+Architekturstand liegt unter [GitHub Pages](https://sogis.github.io/dateninfrastruktur-architektur/).
 
-## Vorbereitete Jobs
+## Prüf- und Publikationsweg
 
-Der zentrale Workflow prüft die festgeschriebenen Quellen mit `npm ci`, `npm run validate`, `npm run test:architecture` und `npm run build`. Er verwendet `DI_WORKSPACE_READ_REMOTE` aus den Repository-Variablen. Der Wert muss zur Remote-Angabe im gepinnten Workspace-Inventar passen. Das PR-Ereignis startet mit dem vertrauenswürdigen Basiscommit und prüft zulässige Modelldaten des PR-Heads ohne Schreib- oder Providergeheimnisse. Änderungen an Prüfern und Regeln brauchen den verantwortlichen Review.
+`Architecture verification` startet bei Architektur-PRs, manuell, täglich
+und durch einen Dispatch aus den geschützten Hauptbranches der Produkte.
+`DI_WORKSPACE_READ_REMOTE` muss mit dem gepinnten Workspace-Inventar
+übereinstimmen. Der lesende Job friert die SHAs ein, prüft die freigegebene
+Website und beobachtet nach dem Abgleich die Refs erneut. Architektur-PRs
+verwenden den vertrauenswürdigen Basiscommit und lesen zulässige Modelldaten
+des PR-Heads ohne Schreib- oder Providergeheimnisse.
 
-Ein zentraler manueller Prüflauf mit den Eingaben `product`, `pr` und `head` bindet einen Produkt-PR an die gepinnten Geschwisterquellen. Er prüft die Herkunft über die PR-Ref des freigegebenen Produktrepos und schreibt einen separaten Kandidatenbefund. Ein Bedarf an weiterem Review oder fehlende Laufzeitbelege bleibt im Lauf sichtbar. Zentraler Vergleich und Website übernehmen erst freigegebene Quellen. Ohne Eingaben beobachtet der manuelle Lauf die Hauptbranches.
+Der getrennte Publikationsjob darf nur von `main` laufen. Er persistiert
+den bereinigten Beobachtungsstatus im Branch `architecture-status`. Ein
+Fast-forward und der Vergleich von Laufnummer und Versuch schützen vor
+älteren Läufen. Der Pages-Job benötigt `pages: write` und
+`id-token: write`. Die gebaute Website und ihre Quellbindung bleiben auch
+bei einer neueren Verletzung erkennbar. Bei einem seit über 36 Stunden
+ausgefallenen Statuskanal zeigt die Website «Aktualität unbekannt».
 
-Nach expliziter Einrichtung können Produktrepos das Trigger-Muster auf ihrem geschützten Hauptbranch installieren. Setze dort `DI_PRODUCT_ID` aus dem Workspace-Inventar und `DI_ARCH_DISPATCH_APP_ID` als Variable. Hinterlege `DI_ARCH_DISPATCH_PRIVATE_KEY` nur in den dafür freigegebenen Produktrepos. Die gepinnte Action erzeugt pro Lauf ein kurzlebiges Installationstoken für das Architekturrepo. Für den Dispatch braucht dieses Token `Contents: write` am Zielrepository. Der zentrale Lauf selbst verwendet `contents: read`. [Trigger-Muster](docs/templates/product-source-changed.yml.example) · [GitHub REST Dispatch](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event)
+Für einen lesenden Produkt-PR-Prüflauf stehen `product`, `pr` und `head`
+zur Verfügung. Der Prüfer verifiziert die echte PR-Ref des Produkts.
+Ein kontrollierter negativer Hosted-Test kann mit der Repository-Variablen
+`DI_HOSTED_PROBE_ENABLED=true` und `publish_probe=true` separat als
+Testbeobachtung ausgewiesen werden. Danach den normalen manuellen
+Vergleich ausführen und die Diagnosevariable entfernen.
 
-Die Trigger sind geschützte Produktänderung, zentraler `repository_dispatch`, manueller `workflow_dispatch` und tägliche Beobachtung. Der zentrale Abgleich friert die beobachteten SHAs ein und prüft nach dem Lauf erneut die Hauptbranches. Der Statuskanal publiziert den Beobachtungsstatus separat vom verifizierten Stand.
+## Produkttrigger und Zugang
 
-## Vertrauensgrenzen und Testumfang
+Das [Trigger-Muster](docs/templates/product-source-changed.yml.example)
+verwendet `DI_PRODUCT_ID` aus dem Inventar und
+`DI_ARCH_DISPATCH_APP_ID` als Variable. `DI_ARCH_DISPATCH_PRIVATE_KEY`
+ist ein Repository-Secret der freigegebenen Produkte. Die private App
+`sogis-di-architecture-dispatch` ist ausschliesslich am Architekturrepo
+installiert. Die gepinnte Action erzeugt pro Lauf ein kurzlebiges Token
+mit `Contents: write` am Ziel. Der zentrale Job akzeptiert nur den
+Dispatch-Absender dieser App. [GitHub REST Dispatch](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event)
 
-Die lokalen Architektur-, Vertrags- und Browsertests benötigen Node 22.23.1, npm 11.18.0 und Chromium. Die dynamischen Prüfungen brauchen die gebundene GRETL-/Jenkins-Toolchain, isoliertes Compose und die lokal überprüften Image- und JAR-Bindungen. Ein normaler Hosted-Runner liefert statische Belege. Für dynamische Belege ist ein ausdrücklich freigegebener isolierter Runner mit dem gleichen Offline-Bundle nötig. Untrusted PRs verwenden keine Nutzer- oder Providercredentials. [GitHub Actions Secure use](https://docs.github.com/en/actions/reference/security/secure-use)
+## Nachweisumfang
 
-`npm run reconcile -- --proposal` kann lokal für legitime Drift einen begrenzten Patch erzeugen. Der Vorschlag enthält Quellanker, bleibt bis zum unabhängigen Review offen und wird separat veröffentlicht. Ein Policyverstoss oder unbekannter Stand erzeugt einen Befund. Die Freigaberegeln und der erforderliche Review des Architekturrepos werden erst nach Aktivierung eingerichtet.
+Der Hosted-Runner führt Quell-, Konfigurations- und Modellprüfungen aus.
+Dynamische Nachweise brauchen die gepinnte GRETL-/Jenkins-Toolchain, deren
+Offline-Bundle sowie einen isolierten Compose-Kontext. Ein geprüfter
+Laufzeitnachweis kann als bereinigter Digest mit exaktem Quellsatz und
+Modellhash freigegeben werden. Ohne passenden Nachweis bleibt die
+Laufzeitabdeckung offen. Die Website veröffentlicht keine Rohbelege.
+[GitHub Actions Secure use](https://docs.github.com/en/actions/reference/security/secure-use)
 
-## Siteziel
-
-Vorgesehen ist GitHub Pages unter dem freigegebenen Architektur-Repository. `dist` verwendet relative Assets und Hashnavigation. Der freigegebene Site-Snapshot erhält separat `status.json` aus dem geschützten Statuslauf. Bei ausgefallenem oder älter als 36 Stunden altem Statuskanal zeigt die Site «Aktualität unbekannt». Die Freigabe muss reale Trigger, Driftanzeige und veröffentlichte Quell-SHAs unabhängig bestätigen.
-
-Für die Aktivierung verbindet der verantwortliche Architektur-Maintainer den geschützten Publikationsjob mit dem freigegebenen Ziel `https://sogis.github.io/dateninfrastruktur-architektur/`. Der Job muss die letzte freigegebene Modell-/Evidenzbindung dauerhaft übernehmen und aus zentralen Läufen den separaten Beobachtungsstatus auch bei fachlichem Fehler publizieren. Ein älterer Lauf darf die beobachtete Generation nur mit erfolgreichem Vergleich der zuletzt publizierten Generation ersetzen. Der lesende Workflow liefert dafür ausschliesslich bereinigte Beobachtungsdaten. Bei privaten Quellen ist ein separat genehmigter lesender Zugriff auf die im Inventar bezeichneten Repos erforderlich.
+`npm run reconcile -- --proposal` erzeugt lokal einen begrenzten Vorschlag
+für legitime Drift. Der Architektur-Maintainer lässt semantische Änderungen
+unabhängig prüfen und gibt sie über den geschützten Hauptbranch frei.

@@ -69,9 +69,13 @@ async function run() {
   const payload = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH!, 'utf8'))
   assert(['pull_request', 'repository_dispatch', 'workflow_dispatch', 'schedule'].includes(event))
   const status = join(root, '.runtime/status.json')
-  if (event === 'workflow_dispatch' && Object.values(payload.inputs ?? {}).some(Boolean)) {
-    const { product, pr, head } = payload.inputs
-    assert.deepEqual(Object.keys(payload.inputs).sort(), ['head', 'pr', 'product'])
+  const { product, pr, head, publish_probe = 'false' } = payload.inputs ?? {}
+  if (event === 'workflow_dispatch' && (product || pr || head || publish_probe === 'true')) {
+    assert(Object.keys(payload.inputs).every(key => ['head', 'pr', 'product', 'publish_probe'].includes(key)))
+    assert(['false', 'true'].includes(publish_probe))
+    const publish = publish_probe === 'true'
+    assert(!publish || process.env.DI_HOSTED_PROBE_ENABLED === 'true' && process.env.GITHUB_REF === 'refs/heads/main',
+      'Hosted counterprobe is not enabled')
     assert(typeof pr === 'string' && /^[1-9][0-9]{0,8}$/.test(pr), 'Invalid product PR number')
     const entry = manifest.entries.find(row => row.id === product)
     assert(entry, 'Product PR repository is not in the approved inventory')
@@ -87,8 +91,8 @@ async function run() {
     git(directory, 'fetch', '--no-tags', '--depth=1', 'origin', ref)
     assert.equal(git(directory, 'rev-parse', 'FETCH_HEAD').trim(), head, 'Product PR head changed during fetch')
     const candidate = { ...lock, products: { ...lock.products, [product]: head } }
-    const result = await reconcile(candidate, signal, join(root, '.runtime/product-pr-status.json'),
-      observeProductPr, { source: 'remote-branches' })
+    const result = await reconcile(candidate, signal, publish ? status : join(root, '.runtime/product-pr-status.json'),
+      observeProductPr, { source: 'diagnostic-product-pr' })
     console.log(JSON.stringify({ scope: 'unprivileged-product-pr', result }))
     if (result.comparison_status !== 'VERIFIED') process.exitCode = 1
     return
@@ -138,6 +142,9 @@ async function run() {
     return
   }
   const signal = normalizedEvent(event === 'repository_dispatch' ? payload.client_payload : null, event)
+  if (event === 'repository_dispatch') {
+    assert(payload.sender?.login === 'sogis-di-architecture-dispatch[bot]', 'Dispatch sender is not the approved App')
+  }
   const observed = observe(workspace, manifest)
   if (signal.repo) {
     assert(observed.products[signal.repo] === signal.sha, 'Dispatch is superseded or not on the approved branch')

@@ -44,6 +44,8 @@ if (typeof document !== 'undefined') {
       'Ausgewählte lokale Download-, Rechte- und Anlieferungsnachweise gelten für den angezeigten Quellstand.'
     if (state.comparisonSource === 'remote-branches') document.querySelector('#remote-status').textContent =
       'Die Tabelle der Beobachtung zeigt den zuletzt verglichenen Remote-Stand.'
+    if (state.comparisonSource === 'diagnostic-product-pr') document.querySelector('#remote-status').textContent =
+      'Die Beobachtung stammt aus einer kontrollierten Prüfung eines Produkt-PRs.'
     if (state.observedAt) {
       const section = document.querySelector('#observation')
       const label = new Intl.DateTimeFormat('de-CH', { dateStyle: 'medium', timeStyle: 'short',
