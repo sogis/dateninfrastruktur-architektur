@@ -81,6 +81,26 @@ function storage(facts) {
   assert.equal(origin.ports.length, 0)
 }
 
+export function policyFindings(facts) {
+  const checks = [
+    ['ARCH-DOWNLOAD-CONFIG', 'stack:services/apisix/routes.template.json', () => assertDownloadConfig(facts.gateway)],
+    ['ARCH-PG-BOUNDARY', 'stack:compose.yaml', () => postgres(facts.compose)],
+    ['ARCH-PUBLIC-CATALOG', 'stack:compose.yaml, stack:services/apisix/routes.template.json', () => publicCatalog(facts)],
+    ['ARCH-STORAGE', 'stack:compose.yaml', () => storage(facts)],
+    ['ARCH-TOPOLOGY', 'stack:compose.yaml', () => assert(Object.values(facts.compose.services)
+      .flatMap(service => service.ports).every(port => port.host === '127.0.0.1' || port.host === '[::1]'))]
+  ] as const
+  return checks.flatMap(([check, sources, run]) => {
+    try {
+      run()
+      return []
+    } catch (error) {
+      if (error.code !== 'ERR_ASSERTION') throw error
+      return [{ check, sources: sources.split(', ') }]
+    }
+  })
+}
+
 function schema() {
   const manifest = JSON.parse(pinnedSource({ repo_id: 'admin', path: 'db/schema/manifest.json' }))
   assert(/^management-\d{8}$/.test(manifest.baseline))
@@ -146,7 +166,7 @@ const configuration = {
 
 export async function verifyArchitecture(facts = sourceFacts(), model = undefined) {
   model ??= await modelAt()
-  checkArchitecture(model)
+  checkArchitecture(model, facts.compose)
   const anchors = validateBindings()
   const results = rules.map(rule => {
     const run = configuration[rule.id]

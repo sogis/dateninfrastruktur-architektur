@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { readFile, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { lock, modelAt, modelViews, root } from './model.mts'
+import { lock, modelAt, modelFingerprint, modelViews, root } from './model.mts'
 import { verifyArchitecture } from './validate-model.mts'
 
 const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
@@ -52,7 +52,8 @@ await writeFile(join(root, 'dist/index.html'), `<!doctype html>
   li strong { font-size: 1.05rem; }
   table { width: 100%; border-collapse: collapse; margin-top: .9rem; text-align: left; }
   th, td { border-bottom: 1px solid var(--line); padding: .35rem .6rem .35rem 0; }
-  code { overflow-wrap: anywhere; }
+  code, #observation li { overflow-wrap: anywhere; }
+  #observation ul { display: block; }
   a { color: var(--blue); }
 </style></head>
 <body><main>
@@ -62,13 +63,16 @@ await writeFile(join(root, 'dist/index.html'), `<!doctype html>
 <section aria-labelledby="views"><h2 id="views">Architektursichten</h2><ul>${cards}</ul></section>
 <section aria-labelledby="status"><h2 id="status">Prüfstand</h2>
 <p><strong>Quellen und Modell geprüft</strong> · Modell ${escape(pkg.version)} · LikeC4 ${escape(pkg.devDependencies.likec4)}</p>
-<p class="details">Prüfzeitpunkt <time datetime="${checkedAt}">${checkedLabel}</time>. Ausgewählte Laufzeitnachweise stehen aus. Remote-SHAs wurden noch nicht verglichen.</p>
-<table><thead><tr><th>Repository</th><th>Geprüfter Quellcommit</th></tr></thead><tbody>${commits}</tbody></table></section>
+<p id="freshness"><strong>Aktualität unbekannt</strong></p>
+<p class="details">Prüfzeitpunkt <time datetime="${checkedAt}">${checkedLabel}</time>. <span id="runtime-status">Ausgewählte Laufzeitnachweise stehen aus.</span> <span id="remote-status">Remote-SHAs wurden noch nicht verglichen.</span></p>
+<table><thead><tr><th>Repository</th><th>Geprüfter Quellcommit</th></tr></thead><tbody>${commits}</tbody></table>
+<div id="observation" hidden><p>Zuletzt beobachteter Quellenstand <time></time></p><ul></ul></div></section>
 <section aria-labelledby="scope"><h2 id="scope">Betriebsgrenze</h2>
 <p>Das Deployment zeigt Loopback-Ports und das interne Compose-Netz. PostgreSQL führt die fachliche Annahme. ClickHouse erhält eine spätere, getrennt bestätigte Projektion.</p>
 <p>Für die fachliche Kommunikation gibt es die separate <a href="https://github.com/sogis/dateninfrastruktur-diagramm">draw.io-Übersicht</a>.</p></section>
-</main></body></html>\n`)
+</main><script type="module" src="./status-view.mjs"></script></body></html>\n`)
 await writeFile(join(root, 'dist/verification.json'), JSON.stringify({
   scope: 'local-compose', checkedAt, modelVersion: pkg.version, likec4: pkg.devDependencies.likec4,
-  sourceLock: lock, runtime: 'unverified', remoteComparison: null, rules: verification.results
+  sourceLock: lock, modelSha256: modelFingerprint(), runtime: 'unverified', remoteComparison: null, rules: verification.results
 }, null, 2) + '\n')
+await copyFile(join(root, 'tooling/status-view.mjs'), join(root, 'dist/status-view.mjs'))

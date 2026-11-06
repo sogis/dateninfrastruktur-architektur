@@ -15,7 +15,9 @@
     "test:browser": "node --test tests/site.test.mjs",
     "browser:install": "playwright-core install chromium",
     "check": "node tooling/validate-model.mts",
-    "select": "node tooling/select-checks.mts"
+    "select": "node tooling/select-checks.mts",
+    "test:architecture": "node --test tests/model.test.mts tests/contracts.test.mts tests/automation.test.mts",
+    "reconcile": "node tooling/reconcile.mts"
   },
   "devDependencies": {
     "likec4": "1.60.0",

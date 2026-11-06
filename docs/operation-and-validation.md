@@ -24,3 +24,9 @@ Der lokale Quellenlock pinnt alle untersuchten Produktstände. Die statische Web
 `npm run check` prüft den gepinnten Quellenstand, die Modellgrenzen und die festen Regeln. Der Bericht trennt die statische Prüfung von ausstehenden Laufzeitnachweisen. Die Faktenextraktion liest Compose mit synthetischen Werten direkt aus dem gebundenen Git-Commit.
 
 `npm run select -- changes.json` nimmt eine Liste von Objekten mit `repo_id` und `path` entgegen und gibt betroffene Checks mit Gründen aus. Gemeinsame Schema- und Laufzeitänderungen betreffen mehrere Szenarien. Unbekannte Pfade ergeben `UNKNOWN` und benötigen einen Quellenabgleich. Eine reine Markdown-Änderung wählt nur die Dokumentationsprüfung.
+
+## Quellenabgleich
+
+`npm run reconcile` friert die lokalen Git-HEADs ein. Die Statusdatei liegt unter `.runtime/status.json`. Ein früher verifizierter Stand und neu beobachtete SHAs bleiben getrennt. Ein bewilligter lokaler Laufzeitbeleg kann mit `npm run reconcile -- --evidence <Verzeichnis> <SHA256>` gebunden werden. Der Digest bezeichnet den geprüften Laufzeitmanifest-Beleg. Die Website kann die daraus erzeugte Statusdatei separat unter `dist/status.json` lesen.
+
+Der Statuskanal verwendet ein tägliches Vergleichsintervall mit zwölf Stunden Toleranz. Die Anzeige meldet einen nicht erreichbaren oder länger ausgefallenen Kanal als unbekannt. [Vorbereitete Aktivierung](../ACTIVATION.md)

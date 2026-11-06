@@ -4,9 +4,9 @@ import { createServer } from 'node:http'
 import { extname, join, resolve } from 'node:path'
 import { test } from 'node:test'
 import { chromium } from 'playwright-core'
-import { lock, modelAt, modelViews, root } from '../tooling/model.mts'
+import { lock, modelAt, modelFingerprint, modelViews, root } from '../tooling/model.mts'
 
-const types = { '.css': 'text/css', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml' }
+const types = { '.css': 'text/css', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml' }
 
 test('built site shows its source scope and opens all seven real diagrams', { timeout: 45000 }, async () => {
   const dist = resolve(root, 'dist')
@@ -38,6 +38,7 @@ test('built site shows its source scope and opens all seven real diagrams', { ti
     assert.equal(landing.status(), 200)
     assert.equal(await page.locator('html').getAttribute('lang'), 'de-CH')
     assert.equal(await page.getByRole('heading', { level: 1, name: 'Dateninfrastruktur' }).count(), 1)
+    assert(await page.getByText('Aktualität unbekannt', { exact: true }).isVisible())
     assert(await page.getByText('Lokales Compose-System', { exact: true }).isVisible())
     assert(await page.getByText('Ausgewählte Laufzeitnachweise stehen aus.', { exact: false }).isVisible())
     assert(await page.getByText('Remote-SHAs wurden noch nicht verglichen.', { exact: false }).isVisible())
@@ -65,6 +66,20 @@ test('built site shows its source scope and opens all seven real diagrams', { ti
         await page.screenshot({ path: join(output, view.id === 'V02' ? 'containers.png' : 'deployment.png') })
       }
     }
+    const older = { workspace: lock.workspace, products: lock.products }
+    const newer = { ...older, products: { ...older.products, admin: 'f'.repeat(40) } }
+    await page.route(origin + '/status.json', route => route.fulfill({ json: {
+      comparison_status: 'VIOLATION', comparison_source: 'remote-branches',
+      verified_source_set: older, verified_at: new Date().toISOString(),
+      observed_source_set: newer, observed_at: new Date().toISOString(),
+      verified_model_sha256: modelFingerprint(), evidence_sha256: '1'.repeat(64),
+      coverage: ['DYN-DOWNLOAD','DYN-RIGHTS','DYN-INGESTION']
+    } }))
+    await page.goto(origin)
+    await page.getByText('Verbindliche Architekturregel verletzt', { exact: true }).waitFor()
+    assert(await page.getByText('Ausgewählte lokale Download-, Rechte- und Anlieferungsnachweise', { exact: false }).isVisible())
+    assert(await page.getByText('admin ' + 'f'.repeat(40), { exact: true }).isVisible())
+    assert.equal(await page.getByText(lock.products.admin, { exact: true }).count(), 1)
     assert.deepEqual(errors, [])
     console.log('DOM and Chromium: local scope, evidence status, hashes and all seven native LikeC4 routes')
   } finally {

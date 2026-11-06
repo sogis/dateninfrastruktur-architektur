@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { LikeC4 } from 'likec4'
 import { extractComposeFacts } from './facts.mts'
-import { lock, pinnedSource, resolveBinding, root, selectSource } from './sources.mts'
+import { lock, pinnedSource, resolveBinding, root, selectSource, sha256 } from './sources.mts'
 
 export { lock, root }
 
@@ -13,6 +13,13 @@ export async function modelAt(source = join(root, 'src')) {
 }
 
 export const requiredViews = ['V01', 'V02', 'V03', 'V04', 'V05', 'V06', 'V07']
+export function modelFingerprint() {
+  const src = join(root, 'src')
+  const files = readdirSync(src, { recursive: true, withFileTypes: true })
+    .filter(entry => entry.isFile()).map(entry => join(entry.parentPath, entry.name).slice(src.length + 1)).sort()
+  return sha256(JSON.stringify(files.map(file => [file, sha256(readFileSync(join(src, file)))])))
+}
+
 export function modelViews(model) {
   return requiredViews.map(id => model.view(id))
 }
@@ -27,8 +34,7 @@ export function assertDownloadBoundary(model) {
   'Gateway bypasses the download authorization or origin boundary')
 }
 
-export function checkArchitecture(model) {
-  const compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))
+export function checkArchitecture(model, compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))) {
   const running = Object.entries(compose.services).filter(([, service]) => service.classification === 'runtime').map(([name]) => 'di.' + name)
   const nodes = id => [...model.view(id).nodes()].map(node => node.id).sort()
   assert.deepEqual([...model.children('di')].map(node => node.id).sort(), running.sort())

@@ -1,0 +1,34 @@
+# Vor der Installation den Repo-ID-Wert aus repositories.json als Variable setzen.
+name: Signal protected source changes
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  signal:
+    if: github.ref_protected
+    runs-on: ubuntu-latest
+    steps:
+      - id: dispatch-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
+        with:
+          app-id: ${{ vars.DI_ARCH_DISPATCH_APP_ID }}
+          private-key: ${{ secrets.DI_ARCH_DISPATCH_PRIVATE_KEY }}
+          owner: sogis
+          repositories: dateninfrastruktur-architektur
+          permission-contents: write
+      - name: Notify the architecture repository
+        env:
+          GH_TOKEN: ${{ steps.dispatch-token.outputs.token }}
+          DI_PRODUCT_ID: ${{ vars.DI_PRODUCT_ID }}
+          DI_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          node -e '
+            const {DI_PRODUCT_ID: repo, DI_SOURCE_SHA: sha} = process.env
+            if (!/^(stack|admin|sodata|jenkins|plugin|topics)$/.test(repo) || !/^[a-f0-9]{40}$/.test(sha)) process.exit(2)
+            console.log(JSON.stringify({event_type:"dateninfrastruktur-source-changed",client_payload:{repo,branch:"main",sha}}))
+          ' | gh api --method POST repos/sogis/dateninfrastruktur-architektur/dispatches --input -

@@ -1,0 +1,66 @@
+name: Architecture verification
+
+on:
+  pull_request:
+  repository_dispatch:
+    types: [dateninfrastruktur-source-changed]
+  workflow_dispatch:
+    inputs:
+      product:
+        description: Optional inventory ID for a read-only product PR check
+        type: string
+      pr:
+        description: Product pull request number
+        type: string
+      head:
+        description: Exact 40-character product PR head SHA
+        type: string
+  schedule:
+    - cron: '31 3 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: di-architecture-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'observed-heads' }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+      - name: Verify the trusted frozen source set
+        env:
+          DI_WORKSPACE_REMOTE: ${{ vars.DI_WORKSPACE_READ_REMOTE }}
+        run: |
+          directory="$(node tooling/ci.mts prepare)"
+          printf '%s\n' "$directory" > "$RUNNER_TEMP/di-architecture-output-path"
+          cd "$directory"
+          npm exec --yes --package=npm@11.18.0 -- npm ci
+          npm exec --yes --package=npm@11.18.0 -- npm run validate
+          npm exec --yes --package=npm@11.18.0 -- npm run test:architecture
+          npm exec --yes --package=npm@11.18.0 -- npm run build
+          node tooling/ci.mts run
+      - name: Collect only public-safe status
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/di-public-status"
+          if test -f "$RUNNER_TEMP/di-architecture-output-path"; then
+            directory="$(cat "$RUNNER_TEMP/di-architecture-output-path")"
+            if test -f "$directory/.runtime/status.json"; then
+              cp "$directory/.runtime/status.json" "$RUNNER_TEMP/di-public-status/status.json"
+            fi
+          fi
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: architecture-observation
+          path: ${{ runner.temp }}/di-public-status
+          if-no-files-found: ignore
