@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "595b1b82d34e0c8969266be4e7bb9acca382541321c050d8822ad0767345792b",
-  "verified_at": "2026-11-07T16:47:02.151Z",
+  "verified_at": "2026-11-07T17:47:50.799Z",
   "evidence_sha256": null,
   "coverage": [
     "source-checked",
@@ -21,22 +21,22 @@
   ],
   "observed_source_set": {
     "schema_version": 1,
-    "workspace": "14e637821acf137c40fa71705c1a3879cc0dfbdc",
+    "workspace": "cee32b257dc3109c56e7d9f548e41cec888d7879",
     "products": {
       "admin": "6c7a06efbafbb741eaef05a33665e8471eb7e15b",
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
-      "plugin": "df6461b35429805b71763d51429df809b190d713",
-      "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "9a65f8e25013c3b58b5e842bbd98c85b92a016f1",
+      "plugin": "fba780cb6f45781a2f8c7784c5ce2abfab779dc2",
+      "sodata": "410a061cdf6cb4560a1b22a34e17557e0bb80b51",
+      "stack": "802f5da155fe56de196b1bff5c09bea7d4fe727c",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-07T16:47:10.779Z",
+  "observed_at": "2026-11-07T17:47:58.891Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "42392974289",
-  "workflow_run_number": 21,
+  "run_id": "42398019201",
+  "workflow_run_number": 22,
   "workflow_run_attempt": 1
 }
