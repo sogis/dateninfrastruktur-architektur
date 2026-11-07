@@ -4,23 +4,20 @@
     "schema_version": 1,
     "workspace": "14e637821acf137c40fa71705c1a3879cc0dfbdc",
     "products": {
-      "admin": "d3f924bdb3a9e82def925b8be280171934a80c1b",
-      "jenkins": "06c4e256c870532f86ccca58e329fe103442eef3",
+      "admin": "6c7a06efbafbb741eaef05a33665e8471eb7e15b",
+      "jenkins": "23c74a00d77a0422401c5dd0f9101c5fc20f5ac9",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "3792f878465b6710b532f28f8c4e05c17866d511",
+      "stack": "e3b943b059673cadc8f717ae6b96aa6d2486ce83",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "verified_model_sha256": "7aab3b126fe334fd2c2f552484157794d54be2b8201131bc013fd63d75442d48",
-  "verified_at": "2026-11-07T15:33:58.048Z",
-  "evidence_sha256": "e8eccab6a430b67b9b12bd0d9ae609cdd07e709c48a5469ea954647c69929ce2",
+  "verified_model_sha256": "595b1b82d34e0c8969266be4e7bb9acca382541321c050d8822ad0767345792b",
+  "verified_at": "2026-11-07T16:47:02.151Z",
+  "evidence_sha256": null,
   "coverage": [
     "source-checked",
-    "configuration-checked",
-    "DYN-DOWNLOAD",
-    "DYN-RIGHTS",
-    "DYN-INGESTION"
+    "configuration-checked"
   ],
   "observed_source_set": {
     "schema_version": 1,
@@ -30,16 +27,16 @@
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "2aec90456b81ba0a9a0d8416e5acb7e8b9cd81db",
+      "stack": "9a65f8e25013c3b58b5e842bbd98c85b92a016f1",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-07T15:34:06.735Z",
+  "observed_at": "2026-11-07T16:47:10.779Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "42386953542",
-  "workflow_run_number": 19,
+  "run_id": "42392974289",
+  "workflow_run_number": 21,
   "workflow_run_attempt": 1
 }
