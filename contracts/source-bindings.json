@@ -29,6 +29,22 @@
               "volumes"
             ]
           }
+        },
+        {
+          "repo_id": "stack",
+          "path": "scripts/compose_operations.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "select_images"
+          }
+        },
+        {
+          "repo_id": "jenkins",
+          "path": "bin/resolve-gretl.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "resolve"
+          }
         }
       ],
       "required_evidence": [
