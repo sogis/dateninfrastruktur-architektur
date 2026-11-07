@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "7aab3b126fe334fd2c2f552484157794d54be2b8201131bc013fd63d75442d48",
-  "verified_at": "2026-11-07T14:52:09.374Z",
+  "verified_at": "2026-11-07T15:04:36.905Z",
   "evidence_sha256": "e8eccab6a430b67b9b12bd0d9ae609cdd07e709c48a5469ea954647c69929ce2",
   "coverage": [
     "source-checked",
@@ -30,16 +30,16 @@
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "209a724a118df9462c1f5f0807a96a22672bad15",
+      "stack": "7de7d6bfa8d14aee498b432bea3d90ea1de11a7a",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-07T14:52:15.698Z",
+  "observed_at": "2026-11-07T15:04:44.316Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "42383483820",
-  "workflow_run_number": 16,
+  "run_id": "42384549860",
+  "workflow_run_number": 17,
   "workflow_run_attempt": 1
 }
