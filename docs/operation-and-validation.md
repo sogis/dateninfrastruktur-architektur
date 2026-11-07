@@ -2,6 +2,13 @@
 
 Der [Entwicklungsstack](../../dateninfrastruktur-dev-stack/README.md) betreibt zehn dauerhafte Dienste in einem Compose-Projekt. Setup- und Testprofile sind explizite Werkzeuge. PostgreSQL, Garage, Admin, Sodata, Jenkins und der Origin verwenden interne Dienstadressen.
 
+`dev.sh admin on` ersetzt den laufenden Admin-Dienst im selben Compose-Projekt
+durch Gradle `bootRun`. APISIX nutzt auch in diesem Modus `admin:8080` für
+Management, CSS und die Download-Autorisierungsprüfung. Der Container liest CSS
+und JTE aus dem Checkout. Erfolgreich kompilierte Java-Änderungen starten den
+Spring-Anwendungskontext neu. `dev.sh admin off` stellt das zuvor verwendete
+Image wieder her.
+
 | Loopback-Port des lokalen Rechners | Standardziel im Container |
 | --- | --- |
 | `127.0.0.1:GATEWAY_PORT` | APISIX `9080` |
