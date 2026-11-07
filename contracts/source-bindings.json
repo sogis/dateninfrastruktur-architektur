@@ -75,6 +75,30 @@
           }
         },
         {
+          "repo_id": "stack",
+          "path": "compose.admin-dev.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": ["services", "admin"]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "scripts/admin_development.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "switch_admin"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "scripts/dev_reload.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "main"
+          }
+        },
+        {
           "repo_id": "admin",
           "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/web/AuthorizationController.java",
           "selector": {

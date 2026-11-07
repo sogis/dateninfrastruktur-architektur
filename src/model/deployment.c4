@@ -5,7 +5,9 @@ deployment {
       instanceOf di.gateway {
         description 'Loopback GATEWAY_PORT → 9080. Bind mounts für APISIX-Konfiguration und Routen.'
       }
-      instanceOf di.admin
+      instanceOf di.admin {
+        description 'Intern admin:8080. Normalbetrieb mit Boot-JAR. Der Entwicklungsmodus ersetzt den Admin-Container im selben Projekt durch Gradle bootRun mit lokalen Quellen.'
+      }
       instanceOf di.sodata
       instanceOf di.jenkins {
         description 'Internes HTTP. Benanntes jenkins-home-Volume. Das Image enthält den beim Build aufgelösten GRETL-5-Snapshot.'

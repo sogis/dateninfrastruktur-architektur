@@ -77,7 +77,12 @@ export function pinnedSource(binding: SourceBinding, repos = pinned ??= resolveS
 export function selectSource(source: string, selector: Selector) {
   switch (selector.kind) {
     case 'json-key': {
-      const selected = selector.keys.reduce((value, key) => value?.[key], parse(source, { uniqueKeys: true }))
+      // Anchors select from one source document. Compose applies merge semantics separately.
+      const document = parse(source, {
+        uniqueKeys: true,
+        customTags: [{ tag: '!override', collection: 'map', resolve: node => node }],
+      })
+      const selected = selector.keys.reduce((value, key) => value?.[key], document)
       assert(selected !== undefined, 'Missing JSON selector: ' + selector.keys.join('/'))
       return selected
     }
