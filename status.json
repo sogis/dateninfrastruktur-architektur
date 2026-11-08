@@ -4,16 +4,16 @@
     "schema_version": 1,
     "workspace": "14e637821acf137c40fa71705c1a3879cc0dfbdc",
     "products": {
-      "admin": "6c7a06efbafbb741eaef05a33665e8471eb7e15b",
+      "admin": "a963e4ac94a8d5dbe74d13576b004b6180800e75",
       "jenkins": "23c74a00d77a0422401c5dd0f9101c5fc20f5ac9",
       "plugin": "df6461b35429805b71763d51429df809b190d713",
       "sodata": "da790bb27c745d0bab1b76c7c5c7fb66939e6369",
-      "stack": "e3b943b059673cadc8f717ae6b96aa6d2486ce83",
+      "stack": "0511925620e63b4a1ecf7e7b16024ca0121618ef",
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "verified_model_sha256": "595b1b82d34e0c8969266be4e7bb9acca382541321c050d8822ad0767345792b",
-  "verified_at": "2026-11-07T20:11:06.948Z",
+  "verified_model_sha256": "4b96e9065aaee44ce951c22beb703b23720bb0b52662e5a2d470ff62e01f8d85",
+  "verified_at": "2026-11-08T10:43:03.697Z",
   "evidence_sha256": null,
   "coverage": [
     "source-checked",
@@ -21,7 +21,7 @@
   ],
   "observed_source_set": {
     "schema_version": 1,
-    "workspace": "cee32b257dc3109c56e7d9f548e41cec888d7879",
+    "workspace": "58c30cf08ca5482aa4f839027a5a3e74bc9a1d3a",
     "products": {
       "admin": "a963e4ac94a8d5dbe74d13576b004b6180800e75",
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
@@ -31,12 +31,12 @@
       "topics": "9c3868f18833a2433bd3115e4d0928aed4dbeea0"
     }
   },
-  "observed_at": "2026-11-07T20:11:13.357Z",
+  "observed_at": "2026-11-08T10:43:08.555Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "42409678133",
-  "workflow_run_number": 27,
+  "run_id": "42472562655",
+  "workflow_run_number": 29,
   "workflow_run_attempt": 1
 }
