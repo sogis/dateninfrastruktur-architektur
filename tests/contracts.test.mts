@@ -76,10 +76,10 @@ test('selection follows direct and transitive inputs and labels unknown changes'
   const ids = result => result.selected.map(row => row.id)
   const direct = selectChecks([{ repo_id: 'stack', path: 'services/apisix/routes.template.json' }])
   assert(ids(direct).includes('ARCH-DOWNLOAD-CONFIG') && ids(direct).includes('DYN-DOWNLOAD'))
-  const schema = selectChecks([{ repo_id: 'admin', path: 'db/schema/physical_contract.sql' }])
+  const schema = selectChecks([{ repo_id: 'admin', path: 'sql/public_views.sql' }])
   assert(['DYN-DOWNLOAD','DYN-RIGHTS','DYN-INGESTION','SCHEMA-BASELINE',
     'ARCH-MODEL-PERSISTENCE','ARCH-SCHEMA-VERIFY'].every(id => ids(schema).includes(id)))
-  const identity = selectChecks([{ repo_id: 'admin', path: 'db/schema/principal_identity.sql' }])
+  const identity = selectChecks([{ repo_id: 'admin', path: 'src/main/java/ch/so/agi/dateninfrastruktur/admin/identity/PrincipalRepository.java' }])
   assert(ids(identity).includes('ARCH-IDENTITY-GUARD'))
   const compose = selectChecks([{ repo_id: 'stack', path: 'compose.yaml' }])
   assert(ids(compose).includes('ARCH-TOPOLOGY') && ids(compose).includes('ARCH-PG-BOUNDARY'))

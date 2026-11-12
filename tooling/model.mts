@@ -72,17 +72,15 @@ export function checkFlowSemantics(model) {
   const step = (list, from, to, text) =>
     list.findIndex(edge => edge.source.id === from && edge.target.id === to && edge.label.includes(text))
   const delivery = edges('V04')
-  const commit = step(delivery, 'di.admin.publication', 'di.postgres.managementDb', 'COMMITTED')
-  const project = step(delivery, 'di.admin.projector', 'di.clickhouse', 'Projektion')
-  const confirm = step(delivery, 'di.admin.projector', 'di.postgres.managementDb', 'Quittiert')
-  assert(commit >= 0 && project > commit && confirm > project, 'Publication sequence differs')
+  const check = step(delivery, 'di.admin.publication', 'di.admin.authz', 'erneut')
+  const commit = step(delivery, 'di.admin.publication', 'di.postgres.managementDb', 'atomar')
+  assert(check >= 0 && commit > check, 'Publication must follow the current authorization check')
   assert(delivery.some(edge => edge.label.includes('bisherige Stand bleibt gültig')))
-  assert(delivery.some(edge => edge.source.id === 'di.jenkins' && edge.target.id === 'di.jenkins' &&
-    edge.label.includes('Jenkins-Spool')))
+  assert(delivery.every(edge => edge.source.id !== 'di.jenkins' && edge.target.id !== 'di.jenkins'))
   const download = edges('V06')
   const permission = step(download, 'di.gateway', 'di.admin.authz', 'forward-auth')
   const forward = step(download, 'di.gateway', 'di.origin', 'freigegebenen')
   assert(permission >= 0 && forward > permission, 'Download authorization must precede origin')
   assert(edges('V05').some(edge => edge.label.includes('Antrag am Datensatz')))
-  assert(edges('V05').some(edge => edge.label.includes('Widerruf und Audit')))
+  assert(edges('V05').some(edge => edge.label.includes('Widerruf und AccessDecision')))
 }

@@ -8,6 +8,7 @@ import { parse } from 'yaml'
 
 export type SourceLock = { schema_version: number; workspace: string; products: Record<string, string> }
 export type Selector =
+  | { kind: 'file' }
   | { kind: 'json-key'; keys: string[] }
   | { kind: 'json-object'; collection: string; id: string }
   | { kind: 'symbol' | 'python-symbol' | 'sql-function'; name: string }
@@ -76,6 +77,10 @@ export function pinnedSource(binding: SourceBinding, repos = pinned ??= resolveS
 
 export function selectSource(source: string, selector: Selector) {
   switch (selector.kind) {
+    case 'file':
+      assert(source.trim(), 'Empty source anchor')
+      return source
+
     case 'json-key': {
       // Anchors select from one source document. Compose applies merge semantics separately.
       const document = parse(source, {

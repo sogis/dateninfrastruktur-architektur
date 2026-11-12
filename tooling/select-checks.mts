@@ -14,10 +14,10 @@ const repoIds = new Set(['workspace', 'architecture', ...Object.keys(lock.produc
 const dynamics = ['DYN-DOWNLOAD', 'DYN-RIGHTS', 'DYN-INGESTION', 'SCHEMA-BASELINE']
 const schemaChecks = ['ARCH-MODEL-PERSISTENCE', 'ARCH-SCHEMA-BASELINE', 'ARCH-SCHEMA-VERIFY', 'ARCH-IDENTITY-GUARD']
 const docsOnly = /(^README[.]md$|^docs\/.*[.]md$|^models\/constraints[.]md$)/
-const schemaPath = /^(db\/|models\/|scripts\/(setup_explicit|audit_setup|persistence_contract|verify_physical_mapping)[.]py|src\/main\/resources\/cayenne\/|src\/main\/java\/.*\/persistence\/)/
-const infrastructure = /^(compose[.]yaml|scripts\/(compose_runtime|ingestion_test_runtime|test_current_schema)[.]py|services\/postgres\/)/
+const schemaPath = /^(db\/|models\/|sql\/|scripts\/(setup_explicit|interlis_tools|normalize_cayenne_uuid)[.]py|src\/main\/resources\/cayenne\/|src\/main\/java\/.*\/persistence\/)/
+const infrastructure = /^(compose[.]yaml|scripts\/(compose_runtime|ingestion_test_runtime|test_management_bootstrap)[.]py|services\/postgres\/)/
 const storage = /^services\/(garage|apisix)\//
-const deliveryTest = /^scripts\/(test_(csv_delivery|delivery_queue|delivery_processing|submission_backend)|delivery_\w+_harness)[.]py$/
+const deliveryTest = /^scripts\/test_(delivery_domain|stack_management|public_catalog)[.]py$/
 
 export function selectChecks(changes: Change[]) {
   const chosen = new Map<string, Set<string>>()
@@ -56,9 +56,7 @@ export function selectChecks(changes: Change[]) {
       mark('DYN-DOWNLOAD', reason + ' (Gateway/Origin/Storage)')
       mark('DYN-INGESTION', reason + ' (privater Storage)')
     } else if (change.repo_id === 'stack' && deliveryTest.test(path)
-        || ['jenkins', 'plugin'].includes(change.repo_id)
-        || change.repo_id === 'topics' && /^(runner|contracts|models)\//.test(path)
-        || change.repo_id === 'admin' && /\/ingestion\//.test(path)) {
+        || change.repo_id === 'admin' && /\/delivery\//.test(path)) {
       mark('DYN-INGESTION', reason + ' (Anlieferung)')
     } else if (change.repo_id === 'admin' && /\/(access|authorization|catalog)\//.test(path)) {
       for (const scenario of dynamics.slice(0, 3)) mark(scenario, reason + ' (gemeinsame Fachrechte)')

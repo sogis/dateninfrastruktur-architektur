@@ -40,10 +40,9 @@
         },
         {
           "repo_id": "jenkins",
-          "path": "bin/resolve-gretl.py",
+          "path": "bin/build-image.sh",
           "selector": {
-            "kind": "python-symbol",
-            "name": "resolve"
+            "kind": "file"
           }
         }
       ],
@@ -79,7 +78,10 @@
           "path": "compose.admin-dev.yaml",
           "selector": {
             "kind": "json-key",
-            "keys": ["services", "admin"]
+            "keys": [
+              "services",
+              "admin"
+            ]
           }
         },
         {
@@ -108,18 +110,18 @@
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ExecutionService.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/DeliveryService.java",
           "selector": {
             "kind": "symbol",
-            "name": "ExecutionService"
+            "name": "DeliveryService"
           }
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/AuditedUnitOfWork.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/ManagementTransactions.java",
           "selector": {
             "kind": "symbol",
-            "name": "AuditedUnitOfWork"
+            "name": "ManagementTransactions"
           }
         }
       ],
@@ -222,6 +224,13 @@
             "kind": "symbol",
             "name": "DatabaseCatalogConfiguration"
           }
+        },
+        {
+          "repo_id": "admin",
+          "path": "sql/public_views.sql",
+          "selector": {
+            "kind": "file"
+          }
         }
       ],
       "required_evidence": [
@@ -250,10 +259,18 @@
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionAuthorizationService.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/access/AuthorityService.java",
           "selector": {
             "kind": "symbol",
-            "name": "SubmissionAuthorizationService"
+            "name": "AuthorityService"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/authorization/JdbcAuthorizationRepository.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "JdbcAuthorizationRepository"
           }
         }
       ],
@@ -275,58 +292,26 @@
       "sources": [
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionService.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/DeliveryService.java",
           "selector": {
             "kind": "symbol",
-            "name": "SubmissionService"
+            "name": "DeliveryService"
           }
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ExecutionService.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/DeliveryController.java",
           "selector": {
             "kind": "symbol",
-            "name": "ExecutionService"
-          }
-        },
-        {
-          "repo_id": "plugin",
-          "path": "src/main/java/ch/so/agi/jenkins/delivery/upload/IncomingUploadStore.java",
-          "selector": {
-            "kind": "symbol",
-            "name": "IncomingUploadStore"
-          }
-        },
-        {
-          "repo_id": "plugin",
-          "path": "src/main/java/ch/so/agi/jenkins/delivery/client/IngestionApiClient.java",
-          "selector": {
-            "kind": "symbol",
-            "name": "IngestionApiClient"
-          }
-        },
-        {
-          "repo_id": "topics",
-          "path": "runner/src/main/java/ch/so/agi/dateninfrastruktur/ingest/RunnerMain.java",
-          "selector": {
-            "kind": "symbol",
-            "name": "RunnerMain"
+            "name": "DeliveryController"
           }
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ResultEvidenceValidator.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/CandidateFiles.java",
           "selector": {
             "kind": "symbol",
-            "name": "ResultEvidenceValidator"
-          }
-        },
-        {
-          "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/SubmissionAuthorizationService.java",
-          "selector": {
-            "kind": "symbol",
-            "name": "SubmissionAuthorizationService"
+            "name": "CandidateFiles"
           }
         }
       ],
@@ -340,7 +325,7 @@
       ]
     },
     {
-      "claim_id": "ingestion.commit-before-projection",
+      "claim_id": "ingestion.atomic-publication",
       "view_ids": [
         "V03",
         "V04"
@@ -349,26 +334,26 @@
       "sources": [
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/PublicationService.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/DeliveryService.java",
           "selector": {
             "kind": "symbol",
-            "name": "PublicationService"
+            "name": "DeliveryService"
           }
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/PublicationReconciler.java",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/ManagementTransactions.java",
           "selector": {
             "kind": "symbol",
-            "name": "PublicationReconciler"
+            "name": "ManagementTransactions"
           }
         },
         {
-          "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/ingestion/ClickHousePublicationProjector.java",
+          "repo_id": "stack",
+          "path": "scripts/test_delivery_domain.py",
           "selector": {
-            "kind": "symbol",
-            "name": "ClickHousePublicationProjector"
+            "kind": "python-symbol",
+            "name": "main"
           }
         }
       ],
@@ -437,20 +422,24 @@
       "sources": [
         {
           "repo_id": "admin",
-          "path": "db/schema/manifest.json",
+          "path": "db/toolchain.json",
           "selector": {
-            "kind": "json-key",
-            "keys": [
-              "baseline"
-            ]
+            "kind": "file"
           }
         },
         {
           "repo_id": "admin",
-          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/RuntimeContractVerifier.java",
+          "path": "sql/public_views.sql",
+          "selector": {
+            "kind": "file"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/persistence/ManagementDatabase.java",
           "selector": {
             "kind": "symbol",
-            "name": "RuntimeContractVerifier"
+            "name": "ManagementDatabase"
           }
         },
         {
@@ -458,7 +447,15 @@
           "path": "scripts/setup_explicit.py",
           "selector": {
             "kind": "python-symbol",
-            "name": "verify_existing"
+            "name": "verify"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "scripts/setup_explicit.py",
+          "selector": {
+            "kind": "python-symbol",
+            "name": "setup"
           }
         }
       ],
@@ -521,7 +518,7 @@
       ]
     },
     {
-      "claim_id": "schema.identity-immutable",
+      "claim_id": "schema.verified-identity",
       "view_ids": [
         "V03",
         "V05"
@@ -530,28 +527,26 @@
       "sources": [
         {
           "repo_id": "admin",
-          "path": "db/schema/manifest.json",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/identity/PrincipalRepository.java",
           "selector": {
-            "kind": "json-key",
-            "keys": [
-              "steps"
-            ]
-          }
-        },
-        {
-          "repo_id": "stack",
-          "path": "scripts/test_current_schema.py",
-          "selector": {
-            "kind": "python-symbol",
-            "name": "identity_guard"
+            "kind": "symbol",
+            "name": "PrincipalRepository"
           }
         },
         {
           "repo_id": "admin",
-          "path": "db/schema/principal_identity.sql",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/security/VerifiedActorResolver.java",
           "selector": {
-            "kind": "sql-function",
-            "name": "di_ops.protect_principal_identity"
+            "kind": "symbol",
+            "name": "VerifiedActorResolver"
+          }
+        },
+        {
+          "repo_id": "admin",
+          "path": "src/main/java/ch/so/agi/dateninfrastruktur/admin/delivery/DeliveryService.java",
+          "selector": {
+            "kind": "symbol",
+            "name": "DeliveryService"
           }
         }
       ],

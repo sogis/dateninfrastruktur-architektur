@@ -10,7 +10,7 @@ specification {
 }
 
 model {
-  supplier = person 'Datenliefernde'
+  client = system 'Interner Delivery-Client'
   reader = person 'Katalognutzende'
   steward = person 'Berechtigende und Katalogpflege'
   analyst = person 'Technische Datennutzende'
@@ -26,10 +26,9 @@ model {
       description 'Ein Prozess für Management, Fachrechte, Anlieferung und Publikation.'
       management = component 'Management und Access'
       authz = component 'Fachautorisierung'
-      submissions = component 'Submission und Execution'
+      submissions = component 'Submission und Ausführung'
       publication = component 'Fachannahme'
-      projector = component 'Projektion und Reconciliation'
-      persistence = component 'Persistenz und Audit'
+      persistence = component 'INTERLIS und Cayenne'
     }
     sodata = service 'Sodata' {
       technology 'Java · PostgreSQL-Sichten'
@@ -37,7 +36,7 @@ model {
     }
     jenkins = service 'Jenkins' {
       technology 'Jenkins · Plugin · GRETL'
-      description 'Anlieferungsoberfläche, Job und Runner im Jenkins-Kontext.'
+      description 'Laufender Jenkins-Dienst. Der alte Uploadpfad ist gesperrt.'
     }
     keycloak = service 'Keycloak' {
       technology 'OpenID Connect'
@@ -52,7 +51,7 @@ model {
     }
     clickhouse = database 'ClickHouse' {
       technology 'ClickHouse SQL'
-      description 'Analytische Kandidaten und veröffentlichte Projektionen.'
+      description 'Technischer SQL-Zugang für Analysen.'
     }
     garage = store 'Garage' {
       technology 'Privates S3 · ch.so.daten'
@@ -68,38 +67,33 @@ model {
     }
   }
 
-  supplier -> di 'Liefert CSV an'
+  client -> di 'Verwendet die interne Delivery-API'
   reader -> di 'Sucht und lädt Daten'
   steward -> di 'Pflegt Katalog und entscheidet über Rechte'
   analyst -> di 'Analysiert Daten'
 
-  supplier -> di.gateway 'Browser / Jenkins'
   reader -> di.gateway 'Katalog und Download'
   steward -> di.gateway 'Management und Access'
   analyst -> di.superset 'Lokale Analytics-UI'
   analyst -> di.clickhouse 'Lokaler SQL-Zugang'
   di.gateway -> di.sodata 'Öffentlicher Katalog'
-  di.gateway -> di.jenkins 'Weiterleitung an die Jenkins-Oberfläche'
+  di.gateway -> di.jenkins 'Leitet zur Jenkins-Oberfläche ohne Uploadpfad weiter'
   di.gateway -> di.admin.management 'Management und Access per HTTP'
   di.gateway -> di.admin.authz 'forward-auth vor dem Download'
   di.gateway -> di.origin 'Leitet den freigegebenen Download weiter'
   di.gateway -> di.keycloak 'OIDC und Tokenprüfung'
-  di.admin.management -> di.admin.persistence 'Fachaktionen mit Audit'
+  di.admin.management -> di.admin.persistence 'Schreibt Katalogaktionen und Access-Entscheide'
   di.admin.authz -> di.postgres.managementDb 'Liest aktuelle Fachrechte'
   di.admin.submissions -> di.admin.authz 'Prüft Anlieferungsrecht'
-  di.admin.submissions -> di.admin.persistence 'Bindet Submission, Dispatch und Execution'
+  di.admin.submissions -> di.admin.persistence 'Bindet Schema, Basisversion und Submission'
   di.admin.submissions -> di.admin.publication 'Übergibt Abschluss und Belege'
   di.admin.publication -> di.admin.authz 'Prüft das ursprüngliche Anlieferungsrecht erneut'
-  di.admin.publication -> di.admin.persistence 'Fachcommit und Projektionsauftrag'
-  di.admin.projector -> di.postgres.managementDb 'Liest Auftrag und quittiert bestätigte Projektion'
-  di.admin.projector -> di.clickhouse 'Projiziert und verifiziert den SQL-Stand'
-  di.admin.persistence -> di.postgres.managementDb 'Cayenne, technische Zustände und Audit'
+  di.admin.publication -> di.admin.persistence 'Speichert Version, Distribution und Annahme atomar'
+  di.admin.persistence -> di.postgres.managementDb 'Cayenne auf di_management'
   di.admin.management -> di.keycloak 'OIDC für Management-Sitzungen'
-  di.jenkins -> di.keycloak 'OIDC und Runner-Serviceidentität'
-  di.jenkins -> di.admin.submissions 'Anlieferung, Claim und gebundener Ausführungsplan'
-  di.jenkins -> di.garage 'Runner archiviert Eingabe und Exporte und prüft per Rücklesen'
-  di.jenkins -> di.clickhouse 'Schreibt und prüft Kandidatenausgaben'
-  di.sodata -> di.postgres.managementDb 'JDBC als di_public auf api_public'
+  di.jenkins -> di.keycloak 'OIDC für Jenkins-Sitzungen'
+  client -> di.admin.submissions 'GET, PUT und POST auf /internal/deliveries'
+  di.sodata -> di.postgres.managementDb 'JDBC als di_public auf di_api_public'
   di.origin -> di.garage 'Privater S3-Abruf mit Reader-Schlüssel'
   di.keycloak -> di.postgres.keycloakDb 'Realm- und Identitätsdaten'
   di.superset -> di.postgres.supersetDb 'Metadaten'

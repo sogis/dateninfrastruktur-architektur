@@ -92,8 +92,6 @@ export function extractComposeFacts(source: string, values: Environment = synthe
   const superset = services.superset?.env ?? {}
   const databases = [
     pg(String(admin.DI_MANAGEMENT_WRITER_USERNAME), admin.DI_MANAGEMENT_WRITER_JDBCURL),
-    pg(String(admin.DI_MANAGEMENT_AUTHORIZATION_USERNAME), admin.DI_MANAGEMENT_AUTHORIZATION_JDBCURL),
-    pg(String(admin.DI_MANAGEMENT_AUDIT_USERNAME), admin.DI_MANAGEMENT_AUDIT_JDBCURL),
     pg(String(sodata.DATENINFRASTRUKTUR_CATALOG_DATABASE_USERNAME), sodata.DATENINFRASTRUKTUR_CATALOG_DATABASE_JDBCURL),
     pg(String(keycloak.KC_DB_USERNAME), keycloak.KC_DB_URL),
     pg(String(superset.SUPERSET_DB_USER), 'postgresql://' + superset.SUPERSET_DB_HOST + '/' + superset.SUPERSET_DB_NAME)

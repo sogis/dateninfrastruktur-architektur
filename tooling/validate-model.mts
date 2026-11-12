@@ -60,7 +60,7 @@ function postgres(facts) {
   assert.deepEqual([...new Set(databases.map(db => db.database))].sort(),
     ['dateninfrastruktur_management', 'keycloak', 'superset'])
   assert.deepEqual(databases.map(db => db.role).sort(),
-    ['di_audit_reader', 'di_authz', 'di_public', 'di_writer', 'keycloak', 'superset'])
+    ['di_public', 'di_writer', 'keycloak', 'superset'])
   assert.equal(facts.services.postgres.ports.length, 0)
 }
 
@@ -102,12 +102,12 @@ export function policyFindings(facts) {
 }
 
 function schema() {
-  const manifest = JSON.parse(pinnedSource({ repo_id: 'admin', path: 'db/schema/manifest.json' }))
-  assert(/^management-\d{8}$/.test(manifest.baseline))
-  assert(manifest.models.length && manifest.models.every(path => path.endsWith('.ili')))
-  assert(manifest.steps.includes('db/schema/physical_contract.sql'))
-  assert('datamap.sha256' in manifest.artifacts && 'toolchain.sha256' in manifest.artifacts)
-  assert(!manifest.steps.some(step => /upgrade|migration/i.test(step)))
+  const setup = pinnedSource({ repo_id: 'admin', path: 'scripts/setup_explicit.py' })
+  const views = pinnedSource({ repo_id: 'admin', path: 'sql/public_views.sql' })
+  assert.equal(setup.match(/ili2pg\('--schemaimport'/g)?.length, 1)
+  assert(setup.includes("'--createBasketCol'") && setup.includes("'--postScript'"))
+  assert(views.includes('CREATE SCHEMA di_api_public') && views.includes('TO di_public'))
+  assert(java('persistence/ManagementDatabase').includes('di_management'))
 }
 
 const java = (path: string) => pinnedSource({
@@ -116,31 +116,35 @@ const java = (path: string) => pinnedSource({
 
 function submissionAuth(model) {
   checkFlowSemantics(model)
-  const source = java('ingestion/SubmissionAuthorizationService')
-  assert(source.includes('authority.allowed(context,actor,dataset,"submit_data")'))
-  assert(source.includes('authority.allowed(context,actor,dataset,"manage_submitters")'))
+  const source = java('delivery/DeliveryService')
+  assert(source.includes('requirePrincipal(context, service, "service")'))
+  assert(source.includes('requireSubmit(context, row.getSubmittedby1(), issue, row.getAmode())'))
+  assert(source.includes('"manage_submitters"'))
 }
 
 function evidenceBinding(model) {
   checkFlowSemantics(model)
-  const source = java('ingestion/ResultEvidenceValidator')
-  assert(source.includes('digest.equals(result.planDigest())'))
-  assert(source.includes('input(plan,result.input())') && source.includes('result.snapshot()') && source.includes('result.outputs()'))
+  const source = java('delivery/CandidateFiles')
+  assert(source.includes('sha256()') && source.includes('byteSize()'))
+  assert(java('delivery/DeliveryService').includes('files.verify(distributionId(id), input)'))
 }
 
 function publication(model) {
   checkFlowSemantics(model)
-  assert(java('ingestion/PublicationService').includes("SET status='COMMITTED'"))
-  const reconcile = java('ingestion/PublicationReconciler')
-  const project = reconcile.indexOf('projector.project(view,')
-  assert(project >= 0 && reconcile.indexOf('finish(job,wanted)', project) > project)
+  const source = java('delivery/DeliveryService')
+  const complete = source.slice(source.indexOf('public State complete'))
+  const lock = complete.indexOf('lockSubmissionTarget(context, id)')
+  const compare = complete.indexOf('input.baseVersionId()')
+  const publish = complete.indexOf('issue.setCurrentversion1(version)')
+  assert(lock >= 0 && compare > lock && publish > compare)
+  assert(complete.includes('row.setAstatus("accepted")'))
+  assert(java('persistence/ManagementTransactions').includes('performInTransaction'))
 }
 
 function currentIdentity() {
-  schema()
-  const identity = pinnedSource({ repo_id: 'admin', path: 'db/schema/principal_identity.sql' })
-  assert(identity.includes('principal external identity immutable'))
-  assert(!identity.includes('operator.migrate_identity') && !identity.includes('di_migrator'))
+  const principal = java('identity/PrincipalRepository')
+  assert(principal.includes('Principal.AISSUER') && principal.includes('Principal.ASUBJECT'))
+  assert(principal.includes('requireActive') && principal.includes('findOrRegisterVerifiedUser'))
 }
 
 const configuration = {
