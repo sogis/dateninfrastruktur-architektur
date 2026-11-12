@@ -34,6 +34,15 @@ test('only legitimate drift permits a bounded proposal', () => {
   assert.equal(classify(docs, 'pass'), 'DOCUMENTATION_DRIFT')
   assert.equal(classify(docs, 'violation'), 'POLICY_VIOLATION')
   assert.equal(classify(docs, 'unknown'), 'UNKNOWN')
+  const dependencies = [
+    { repo_id: 'jenkins', path: 'Dockerfile' },
+    { repo_id: 'jenkins', path: 'toolchain-lock.json' },
+    { repo_id: 'plugin', path: '.github/workflows/maven-publish.yml' },
+    { repo_id: 'workspace', path: 'tooling/workspace/inventory.py' },
+  ]
+  assert.equal(classify([...docs, ...dependencies], 'pass'), 'DEPENDENCY_DRIFT')
+  assert.equal(classify(dependencies, 'violation'), 'POLICY_VIOLATION')
+  assert.equal(classify([...dependencies, { repo_id: 'plugin', path: 'pom.xml' }], 'pass'), 'UNKNOWN')
   assert.equal(classify([{ repo_id: 'architecture', path: 'docs/published-evidence/sample.json' }], 'pass'), 'NO_CHANGE')
   const inputs = [{ path: 'docs/overview.md', contents: 'before' }, { path: 'contracts/invariants.json', contents: '{}' }]
   const allowed = new Set(['stack:compose.yaml'])
