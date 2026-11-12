@@ -10,7 +10,7 @@ import { randomUUID } from 'node:crypto'
 import { extractComposeFacts, extractGatewayFacts } from './facts.mts'
 import { modelAt, modelFingerprint } from './model.mts'
 import { lock, pinnedSource, resolveSources, root, safePath, sha256, workspaceRoot, type SourceLock } from './sources.mts'
-import { selectChecks } from './select-checks.mts'
+import { dependencyChecks, selectChecks } from './select-checks.mts'
 import { policyFindings, verifyArchitecture } from './validate-model.mts'
 
 type Change = { repo_id: string; path: string }
@@ -98,10 +98,14 @@ export function classify(changes: Change[], policy: 'pass' | 'violation' | 'unkn
   const relevant = changes.filter(change => !evidenceOnly.test(change.path))
   if (!relevant.length) return 'NO_CHANGE'
   if (selectChecks(relevant).status === 'UNKNOWN') return 'UNKNOWN'
-  const represented = relevant.every(({ repo_id, path }) =>
+  const represented = ({ repo_id, path }: Change) =>
     /^docs\/.*[.]md$|^README[.]md$/.test(path) ||
-    repo_id === 'stack' && ['compose.yaml', 'services/apisix/routes.template.json'].includes(path))
-  return represented ? 'DOCUMENTATION_DRIFT' : 'UNKNOWN'
+    repo_id === 'stack' && ['compose.yaml', 'services/apisix/routes.template.json'].includes(path)
+  if (relevant.every(represented)) return 'DOCUMENTATION_DRIFT'
+  if (relevant.every(change => represented(change) || dependencyChecks(change).length > 0)) {
+    return 'DEPENDENCY_DRIFT'
+  }
+  return 'UNKNOWN'
 }
 
 function inputFingerprint(candidate: SourceLock, workspace: string) {
@@ -318,7 +322,7 @@ export async function reconcile(candidate: SourceLock, event: ReturnType<typeof 
       result.observed_input_sha256 = fingerprint
     } else {
       const key = digest({ candidate, changes })
-      const proposed = options.proposal && await createProposal(candidate, changes, facts, key,
+      const proposed = decision === 'DOCUMENTATION_DRIFT' && options.proposal && await createProposal(candidate, changes, facts, key,
         options.proposalDirectory ?? join(root, '.runtime/proposals'), options.agent ?? callCodex)
       result = { comparison_status: 'DRIFT', proposal_ref: proposed ? key : null,
         observed_coverage: ['configuration-checked'], changes, selected_checks: selected }

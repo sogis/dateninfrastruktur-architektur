@@ -18,6 +18,21 @@ const schemaPath = /^(db\/|models\/|sql\/|scripts\/(setup_explicit|interlis_tool
 const infrastructure = /^(compose[.]yaml|scripts\/(compose_runtime|ingestion_test_runtime|test_management_bootstrap)[.]py|services\/postgres\/)/
 const storage = /^services\/(garage|apisix)\//
 const deliveryTest = /^scripts\/test_(delivery_domain|stack_management|public_catalog)[.]py$/
+const jenkinsBuild = new Set([
+  'Dockerfile', 'bin/build-image.sh', 'bin/prepare-image-context.sh', 'bin/resolve-gretl.py',
+  'gretl-bundle.gradle', 'oidc-plugin.sha256', 'tests/test_gretl_snapshot.py', 'toolchain-lock.json',
+])
+const workspaceCli = new Set(['workspace', 'tooling/workspace/inventory.py'])
+
+export function dependencyChecks({ repo_id, path }: Change): readonly string[] {
+  if (repo_id === 'jenkins' && jenkinsBuild.has(path)) return ['ARCH-JENKINS-BUILD']
+  if (repo_id === 'jenkins' && path === 'bin/publish_multiarch.py'
+      || repo_id === 'plugin' && path === '.github/workflows/maven-publish.yml') {
+    return ['ARCH-RELEASE']
+  }
+  if (repo_id === 'workspace' && workspaceCli.has(path)) return ['ARCH-SOURCE-SET']
+  return []
+}
 
 export function selectChecks(changes: Change[]) {
   const chosen = new Map<string, Set<string>>()
@@ -45,7 +60,10 @@ export function selectChecks(changes: Change[]) {
       for (const id of claim.check_ids) mark(id, reason)
       for (const scenario of scenarioRules.get(claim.claim_id) ?? []) mark(scenario, reason)
     }
-    if (change.repo_id === 'admin' && (schemaPath.test(path) || ['Dockerfile', 'build.gradle'].includes(path))
+    const dependencies = dependencyChecks({ repo_id: change.repo_id, path })
+    if (dependencies.length) {
+      for (const id of dependencies) mark(id, reason)
+    } else if (change.repo_id === 'admin' && (schemaPath.test(path) || ['Dockerfile', 'build.gradle'].includes(path))
         || change.repo_id === 'stack' && infrastructure.test(path)) {
       for (const id of [...schemaChecks, ...dynamics]) mark(id, reason + ' (gemeinsamer Schema-/Laufzeitvertrag)')
       if (change.repo_id === 'stack') {
