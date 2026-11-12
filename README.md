@@ -1,6 +1,6 @@
 # Dateninfrastruktur · lokale Ist-Architektur
 
-Sieben LikeC4-Sichten zeigen Systemgrenze, technische Dienste, Admin, CSV-Anlieferung, Fachrechte, Downloads und das lokale Deployment. Das Repository pinnt den untersuchten Workspace und die Produktstände in [sources.lock.json](sources.lock.json). Die fachliche Übersicht wird separat gepflegt. [Fachliches Diagramm](https://github.com/sogis/dateninfrastruktur-diagramm)
+Sieben LikeC4-Sichten zeigen Systemgrenze, technische Dienste, Admin, CSV-Submission, Fachrechte, Downloads und das lokale Deployment. Das Repository pinnt den untersuchten Workspace und die Produktstände in [sources.lock.json](sources.lock.json). Die fachliche Übersicht wird separat gepflegt. [Fachliches Diagramm](https://github.com/sogis/dateninfrastruktur-diagramm)
 
 Mit Node 22.23.1 und npm 11.18.0 aus diesem Repository ausführen.
 

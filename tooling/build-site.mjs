@@ -72,7 +72,7 @@ await writeFile(join(root, 'dist/index.html'), `<!doctype html>
 <table><thead><tr><th>Repository</th><th>Geprüfter Quellcommit</th></tr></thead><tbody>${commits}</tbody></table>
 <div id="observation" hidden><p>Zuletzt beobachteter Quellenstand <time></time></p><ul></ul></div></section>
 <section aria-labelledby="scope"><h2 id="scope">Betriebsgrenze</h2>
-<p>Das Deployment zeigt Loopback-Ports und das interne Compose-Netz. PostgreSQL führt die fachliche Annahme. ClickHouse erhält eine spätere, getrennt bestätigte Projektion.</p>
+<p>Das Deployment zeigt Loopback-Ports und das interne Compose-Netz. PostgreSQL speichert die fachliche Annahme. ClickHouse stellt den separaten technischen SQL-Zugang bereit.</p>
 <p>Für die fachliche Kommunikation gibt es die separate <a href="https://github.com/sogis/dateninfrastruktur-diagramm">draw.io-Übersicht</a>.</p></section>
 </main><script type="module" src="./status-view.mjs"></script></body></html>\n`)
 await writeFile(join(root, 'dist/verification.json'), JSON.stringify({

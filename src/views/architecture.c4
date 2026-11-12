@@ -2,7 +2,7 @@ views {
   view V01 {
     title 'Systemkontext'
     description 'Rollen und die Grenze des lokal untersuchten Systems.'
-    include supplier, reader, steward, analyst, di
+    include client, reader, steward, analyst, di
     autoLayout LeftRight
   }
 
@@ -24,28 +24,22 @@ views {
   }
 
   dynamic view V04 {
-    title 'CSV-Anlieferung'
-    description 'Die atomare Fachannahme in PostgreSQL und die spätere SQL-Projektion sind getrennte Schritte.'
-    supplier -> di.gateway 'Identifiziert sich und öffnet die Anlieferung'
-    di.gateway -> di.jenkins 'Öffnet das Plugin'
-    di.jenkins -> di.admin.submissions 'Fragt aktuelle Anlieferungsberechtigung und Slot an'
-    di.jenkins -> di.jenkins 'Speichert CSV im privaten Jenkins-Spool'
-    di.jenkins -> di.admin.submissions 'Versiegelt Upload über gebundene Grösse, Hash und Spool-Beleg'
-    di.jenkins -> di.admin.submissions 'Beansprucht Dispatch und liest den gebundenen Plan'
-    di.jenkins -> di.jenkins 'GRETL validiert die Eingabe und erzeugt den Snapshot'
-    di.jenkins -> di.garage 'Archiviert Eingabe und schreibt Exporte. Liest Artefakte für die Belege zurück.'
-    di.jenkins -> di.clickhouse 'Schreibt und überprüft Kandidatenausgaben'
-    di.jenkins -> di.admin.publication 'Meldet Abschluss mit gebundenen Integritätsbelegen'
-    di.admin.publication -> di.admin.authz 'Prüft das ursprüngliche Anlieferungsrecht erneut'
+    title 'Fachliche Annahme einer CSV-Submission'
+    description 'Interne Admin-API. Der isolierte Test verwendet einen vorbereiteten Kandidaten.'
+    client -> di.admin.submissions 'Benutzer-JWT legt pending an'
+    client -> di.admin.submissions 'Service-JWT startet die Ausführung'
+    di.admin.submissions -> di.admin.authz 'Prüft das aktuelle Lieferrecht des gespeicherten Benutzers'
+    di.admin.submissions -> di.admin.persistence 'Bindet Schema und Basisversion'
+    client -> di.admin.submissions 'Service meldet Abschluss eines vorbereiteten Kandidaten'
+    di.admin.submissions -> di.admin.publication 'Prüft Pfad, Grösse und SHA-256'
+    di.admin.publication -> di.admin.authz 'Prüft das aktuelle Lieferrecht erneut'
     alt {
-      when 'Recht und Basisversion gültig' {
-        di.admin.publication -> di.postgres.managementDb 'Vergleicht Basisversion und schreibt Fachannahme atomar als COMMITTED'
-        di.admin.publication -> di.jenkins 'SQL-Aktualisierung ausstehend. Identische Wiederholung liefert die vorhandene Annahme.'
-        di.admin.projector -> di.clickhouse 'Veröffentlicht und verifiziert die Projektion getrennt'
-        di.admin.projector -> di.postgres.managementDb 'Quittiert die bestätigte Projektion. Reconciliation wiederholt ausstehende Arbeit.'
+      when 'Lieferrecht und Basisversion gültig' {
+        di.admin.publication -> di.postgres.managementDb 'Sperrt Ausgabe und publiziert Version und Distribution atomar'
+        di.admin.publication -> client 'Gibt den angenommenen Stand zurück'
       }
       else 'Entzug oder veraltete Basis' {
-        di.admin.publication -> di.jenkins 'Lehnt die Fertigstellung ab. Der bisherige Stand bleibt gültig.'
+        di.admin.publication -> client 'Lehnt den Abschluss ab. Der bisherige Stand bleibt gültig.'
       }
     }
   }
@@ -58,10 +52,10 @@ views {
     di.admin.management -> di.postgres.managementDb 'Erfasst Antrag am Datensatz'
     steward -> di.gateway 'Entscheidet oder vergibt direkt mit passender Zuständigkeit'
     di.gateway -> di.admin.management 'Reicht den Entscheid weiter'
-    di.admin.management -> di.postgres.managementDb 'Schreibt Entscheid, Grant und Audit atomar'
+    di.admin.management -> di.postgres.managementDb 'Schreibt Entscheid und Grant atomar'
     steward -> di.gateway 'Widerruft den Grant mit aktueller Zuständigkeit'
     di.gateway -> di.admin.management 'Reicht den Widerruf weiter'
-    di.admin.management -> di.postgres.managementDb 'Schreibt Widerruf und Audit'
+    di.admin.management -> di.postgres.managementDb 'Schreibt Widerruf und AccessDecision'
     di.admin.authz -> di.postgres.managementDb 'Liest das danach aktuelle Recht bei der nächsten Anfrage'
   }
 

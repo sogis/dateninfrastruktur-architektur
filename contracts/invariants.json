@@ -51,7 +51,7 @@
     },
     {
       "id": "ARCH-PUBLICATION",
-      "claim_id": "ingestion.commit-before-projection",
+      "claim_id": "ingestion.atomic-publication",
       "scope": "local-compose",
       "runtime": "DYN-INGESTION"
     },
@@ -87,7 +87,7 @@
     },
     {
       "id": "ARCH-IDENTITY-GUARD",
-      "claim_id": "schema.identity-immutable",
+      "claim_id": "schema.verified-identity",
       "scope": "local-compose",
       "runtime": "SCHEMA-BASELINE"
     }
