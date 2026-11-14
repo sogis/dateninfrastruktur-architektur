@@ -2,11 +2,11 @@
   "schema_version": 1,
   "workspace": "58c30cf08ca5482aa4f839027a5a3e74bc9a1d3a",
   "products": {
-    "admin": "3c6b8986eabb7dcf6509fc15d46cead2e0d33a63",
+    "admin": "066bd8509435edfd4532251db879132d752e4378",
     "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
     "plugin": "fba780cb6f45781a2f8c7784c5ce2abfab779dc2",
     "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-    "stack": "1aab8542c981c61157f72e634bd111de69d0b93c",
+    "stack": "8e70f036bed6588904e744c8d30f0165ee38be26",
     "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
   }
 }
