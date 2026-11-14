@@ -145,6 +145,21 @@
       "sources": [
         {
           "repo_id": "stack",
+          "path": "services/apisix/config.single.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": ["apisix", "lua_module_hook"]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "services/apisix/dns-cache.lua",
+          "selector": {
+            "kind": "file"
+          }
+        },
+        {
+          "repo_id": "stack",
           "path": "services/apisix/routes.template.json",
           "selector": {
             "kind": "json-object",
@@ -420,6 +435,13 @@
       ],
       "scope": "local-compose",
       "sources": [
+        {
+          "repo_id": "admin",
+          "path": "models/SO_AGI_DataInfrastructure_Organization_20261112.ili",
+          "selector": {
+            "kind": "file"
+          }
+        },
         {
           "repo_id": "admin",
           "path": "db/toolchain.json",
