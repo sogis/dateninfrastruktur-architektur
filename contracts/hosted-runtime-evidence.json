@@ -4,30 +4,30 @@
     "schema_version": 1,
     "workspace": "58c30cf08ca5482aa4f839027a5a3e74bc9a1d3a",
     "products": {
-      "admin": "81a5908da0ea71c586cba257bef79144a954d716",
+      "admin": "066bd8509435edfd4532251db879132d752e4378",
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
       "plugin": "fba780cb6f45781a2f8c7784c5ce2abfab779dc2",
       "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-      "stack": "7efcbe683a1322409a8219a8846b92a0cb9357d6",
-      "topics": "6e959fe3ff114d7a4c1512e303a2d66f74bb85e2"
+      "stack": "e78ca05fda0643d3744885fe7c0ae752a97d7e93",
+      "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
   "model_sha256": "6bf3ad7f9dac0f87e4bc4e7fc23b266a3fa3806418c8bf8188d4a029d34a2eb8",
-  "evidence_sha256": "d8d0a0c1167e9ebb2bb1ebcc4092a75b6fc9310229f6082c0fd9ce1032a8a7b8",
-  "verified_at": "2026-11-13T05:32:15.921021+00:00",
+  "evidence_sha256": "aa97616e255cdc6c54ff8fce9df0aef4e4a8fe690c90ee6556cb9a4db55ef5c8",
+  "verified_at": "2026-11-14T17:50:13.615000Z",
   "scenarios": [
     "DYN-DOWNLOAD",
     "DYN-RIGHTS",
     "DYN-INGESTION"
   ],
   "review": {
-    "specification": "di-s1-minor-release",
-    "revision": "2026-11-13",
-    "phase": "S1-minors-release",
+    "specification": "gateway-admin-restart",
+    "revision": "2026-11-14",
+    "phase": "merge-lock",
     "verdict": "ABGENOMMEN",
-    "candidate_id": "90a17377-361f-4c48-833f-892853f0819b",
-    "gate_sha256": "3150bb3ed5969dd1b506817059960595652a3e9fabaa726bf6497826044c3869",
-    "architecture_commit": "be55cd062d151897b8002c7ae1bba3bf41b6a630",
+    "candidate_id": "e1443925-6b14-4859-b492-7c31049c7997",
+    "gate_sha256": "9fe7d064938ce451d6947dc134a1ab1e1693eefaf43778884c910458e6b4fc2e",
+    "architecture_commit": "2fff409668d83ba090c6b1fdb63f7bac9ae4e584",
     "provider": "deepseek",
     "model": "deepseek-flash",
     "model_revision": "DeepSeek-V4.1-Flash-1017"
