@@ -145,6 +145,21 @@
       "sources": [
         {
           "repo_id": "stack",
+          "path": "services/apisix/config.single.yaml",
+          "selector": {
+            "kind": "json-key",
+            "keys": ["apisix", "lua_module_hook"]
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "services/apisix/dns-cache.lua",
+          "selector": {
+            "kind": "file"
+          }
+        },
+        {
+          "repo_id": "stack",
           "path": "services/apisix/routes.template.json",
           "selector": {
             "kind": "json-object",

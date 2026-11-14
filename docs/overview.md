@@ -5,7 +5,9 @@ Downloads. Admin verwaltet den Katalog, Fachrechte und CSV-Submissions
 in einem Java-Prozess. Sodata liest die PostgreSQL-Sichten
 `di_api_public` mit `di_public`. Für jeden Download holt APISIX beim
 Admin einen aktuellen Fachentscheid ein und leitet nur freigegebene
-Anfragen an den internen rclone-Origin mit privatem Garage-Zugang weiter.
+Anfragen an den internen rclone-Origin mit privatem Garage-Zugang weiter. Bei einem
+Admin-Ausfall verweigert APISIX Downloads mit HTTP 503. Positive und
+negative DNS-Antworten für Compose-Dienste werden zwei Sekunden gecacht.
 
 PostgreSQL 16/PostGIS betreibt getrennte Datenbanken für Management,
 Keycloak und Superset. ili2pg legt die vier INTERLIS-Modelle in

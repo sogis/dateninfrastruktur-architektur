@@ -44,6 +44,10 @@ export function verifyRun(readLog: ReadLog) {
     assert(typeof run.toolVersion === 'string' && run.toolVersion.length > 0)
     const paths = [script, 'scripts/compose_runtime.py', 'scripts/ingestion_test_runtime.py',
       'scripts/test_management_bootstrap.py', 'compose.yaml']
+    if (check.file === 'public-catalog') {
+      paths.push('services/apisix/routes.template.json', 'services/apisix/config.single.yaml',
+        'services/apisix/dns-cache.lua')
+    }
     const contract: EvidenceContract = {
       check: check.scenarios.join('+'), inputSha256: sha256(JSON.stringify(sources)),
       testSha256: sha256(JSON.stringify(paths.map(path => [path, sha256(pinnedSource({ repo_id: 'stack', path }))]))),
