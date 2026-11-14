@@ -422,6 +422,13 @@
       "sources": [
         {
           "repo_id": "admin",
+          "path": "models/SO_AGI_DataInfrastructure_Organization_20261112.ili",
+          "selector": {
+            "kind": "file"
+          }
+        },
+        {
+          "repo_id": "admin",
           "path": "db/toolchain.json",
           "selector": {
             "kind": "file"

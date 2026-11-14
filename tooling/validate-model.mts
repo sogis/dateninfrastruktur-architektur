@@ -102,12 +102,21 @@ export function policyFindings(facts) {
 }
 
 function schema() {
+  const organization = pinnedSource({
+    repo_id: 'admin', path: 'models/SO_AGI_DataInfrastructure_Organization_20261112.ili'
+  })
   const setup = pinnedSource({ repo_id: 'admin', path: 'scripts/setup_explicit.py' })
   const views = pinnedSource({ repo_id: 'admin', path: 'sql/public_views.sql' })
   assert.equal(setup.match(/ili2pg\('--schemaimport'/g)?.length, 1)
   assert(setup.includes("'--createBasketCol'") && setup.includes("'--postScript'"))
   assert(views.includes('CREATE SCHEMA di_api_public') && views.includes('TO di_public'))
-  assert(java('persistence/ManagementDatabase').includes('di_management'))
+  assert.match(organization, /DIOID = OID TEXT\*200;/)
+  assert.match(organization, /OID AS SO_AGI_DataInfrastructure_Organization_20261112\.DIOID;/)
+  assert.doesNotMatch(views, /ALTER COLUMN t_ili_tid TYPE/i)
+  for (const verifier of [setup, java('persistence/ManagementDatabase')]) {
+    assert.match(verifier, /table_name IN \('office', 'contactpoint'\)/)
+    assert.match(verifier, /data_type = 'character varying' AND character_maximum_length = 200/)
+  }
 }
 
 const java = (path: string) => pinnedSource({
