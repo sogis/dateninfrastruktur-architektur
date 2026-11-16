@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "6bf3ad7f9dac0f87e4bc4e7fc23b266a3fa3806418c8bf8188d4a029d34a2eb8",
-  "verified_at": "2026-11-16T06:31:38.626Z",
+  "verified_at": "2026-11-16T11:58:18.894Z",
   "evidence_sha256": "aa97616e255cdc6c54ff8fce9df0aef4e4a8fe690c90ee6556cb9a4db55ef5c8",
   "coverage": [
     "source-checked",
@@ -24,22 +24,22 @@
   ],
   "observed_source_set": {
     "schema_version": 1,
-    "workspace": "58c30cf08ca5482aa4f839027a5a3e74bc9a1d3a",
+    "workspace": "1643a89cf6ac010b19e2d714648784e7f96404d6",
     "products": {
-      "admin": "066bd8509435edfd4532251db879132d752e4378",
+      "admin": "25d303eb4d2f08cc92b91421a7e032eaa480d8ed",
       "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
       "plugin": "fba780cb6f45781a2f8c7784c5ce2abfab779dc2",
       "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-      "stack": "e78ca05fda0643d3744885fe7c0ae752a97d7e93",
+      "stack": "a9752b25ce42f9057fbd46f748fcc032c0c6ccc5",
       "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
-  "observed_at": "2026-11-15T11:25:35.877Z",
+  "observed_at": "2026-11-16T11:58:28.294Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "43817301515",
-  "workflow_run_number": 60,
+  "run_id": "43862295686",
+  "workflow_run_number": 61,
   "workflow_run_attempt": 1
 }
