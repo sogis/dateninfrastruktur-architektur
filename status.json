@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "6bf3ad7f9dac0f87e4bc4e7fc23b266a3fa3806418c8bf8188d4a029d34a2eb8",
-  "verified_at": "2026-11-17T19:54:28.778Z",
+  "verified_at": "2026-11-18T12:09:10.639Z",
   "evidence_sha256": "aa97616e255cdc6c54ff8fce9df0aef4e4a8fe690c90ee6556cb9a4db55ef5c8",
   "coverage": [
     "source-checked",
@@ -28,18 +28,18 @@
     "products": {
       "admin": "25d303eb4d2f08cc92b91421a7e032eaa480d8ed",
       "jenkins": "28c993a829ae369ce17384f0cb1e1014c27a07cc",
-      "plugin": "9098c0d2f37b1c204f1d169179344a56b151c39f",
+      "plugin": "7a857a1d0b761dc4062796e131b35c4bf4470674",
       "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-      "stack": "50580ef38185d09dfccab65f18ad8ecc54f5eeb9",
+      "stack": "eb14d4ce1d3bac9773b22c874853726b813805a8",
       "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
-  "observed_at": "2026-11-17T12:23:18.960Z",
+  "observed_at": "2026-11-18T12:09:17.461Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "44163525468",
-  "workflow_run_number": 71,
+  "run_id": "44301111937",
+  "workflow_run_number": 72,
   "workflow_run_attempt": 1
 }
