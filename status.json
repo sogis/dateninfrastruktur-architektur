@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "6bf3ad7f9dac0f87e4bc4e7fc23b266a3fa3806418c8bf8188d4a029d34a2eb8",
-  "verified_at": "2026-11-20T19:04:17.808Z",
+  "verified_at": "2026-11-20T19:05:25.685Z",
   "evidence_sha256": "aa97616e255cdc6c54ff8fce9df0aef4e4a8fe690c90ee6556cb9a4db55ef5c8",
   "coverage": [
     "source-checked",
@@ -39,7 +39,7 @@
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "44798617342",
-  "workflow_run_number": 80,
+  "run_id": "44798714446",
+  "workflow_run_number": 81,
   "workflow_run_attempt": 1
 }
