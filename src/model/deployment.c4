@@ -1,22 +1,27 @@
 deployment {
   local = environment 'Lokaler Entwicklungsrechner' {
-    description 'Ein Compose-Projekt mit lokalen Builds oder Registry-Images. Veröffentlichte Hostports sind an 127.0.0.1 gebunden.'
+    description 'Ein Compose-Projekt mit persistenten Named Volumes. Die Entwicklung auf dem Host verwendet Registry-Images. Veröffentlichte Hostports sind an 127.0.0.1 gebunden.'
+    host = zone 'macOS-Host' {
+      hostAdmin = instanceOf di.admin {
+        description 'Alternative zum Admin-Container. Spring Boot und Java 25 auf 127.0.0.1:8080. APISIX und Jenkins erreichen dieselbe Adresse admin:8080 über Docker Desktops host-gateway.'
+      }
+    }
     compose = zone 'Internes Compose-Netz' {
       instanceOf di.gateway {
         description 'Loopback GATEWAY_PORT → 9080. Bind mounts für APISIX-Konfiguration und Routen.'
       }
       instanceOf di.admin {
-        description 'Intern admin:8080. Normalbetrieb mit Boot-JAR. Der Entwicklungsmodus ersetzt den Admin-Container im selben Projekt durch Gradle bootRun mit lokalen Quellen.'
+        description 'Intern admin:8080. Im Integrationsmodus läuft das Boot-JAR im Container.'
       }
       instanceOf di.sodata
       instanceOf di.jenkins {
-        description 'Internes HTTP. Benanntes jenkins-home-Volume. Das Image enthält den beim Build aufgelösten GRETL-5-Snapshot.'
+        description 'Internes HTTP und persistentes jenkins-home. Das veröffentlichte Image enthält GRETL 6 und das Plugin. Im optionalen Job-Overlay bindet Compose die Jobdateien schreibgeschützt ein.'
       }
       instanceOf di.keycloak {
         description 'Loopback 18080 → 8080 als Standard. Realm-Definition aus Runtime-Bind-Mount.'
       }
       instanceOf di.postgres {
-        description 'Intern 5432. Ein postgres-data-Volume mit Management-, Keycloak- und Superset-Datenbank.'
+        description 'Intern 5432. Im Hostmodus zusätzlich 127.0.0.1:15432. Ein postgres-data-Volume mit Management-, Keycloak- und Superset-Datenbank.'
       }
       instanceOf di.clickhouse {
         description 'Loopback 18123 → 8123 und 19000 → 9000 als Standards. Daten- und Logvolumes.'
@@ -25,7 +30,7 @@ deployment {
         description 'Internes S3. Benannte Garage-Metadaten- und Datenvolumes.'
       }
       instanceOf di.origin {
-        description 'Intern 8080. Read-only-Bind-Mount der erzeugten rclone-Konfiguration.'
+        description 'Intern 8080. Im Hostmodus zusätzlich 127.0.0.1:18090. Schreibgeschützter Bind-Mount der erzeugten rclone-Konfiguration.'
       }
       instanceOf di.superset {
         description 'Loopback 18088 → 8088 als Standard. Benanntes Superset-Home-Volume.'

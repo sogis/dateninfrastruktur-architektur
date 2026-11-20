@@ -134,8 +134,11 @@ function submissionAuth(model) {
 function evidenceBinding(model) {
   checkFlowSemantics(model)
   const source = java('delivery/CandidateFiles')
-  assert(source.includes('sha256()') && source.includes('byteSize()'))
-  assert(java('delivery/DeliveryService').includes('files.verify(distributionId(id), input)'))
+  assert(source.includes('new DigestInputStream(body, digest)') && source.includes('count += read'))
+  const delivery = java('delivery/DeliveryService')
+  assert(delivery.includes('files.verify(distributionId(id))'))
+  assert(delivery.includes('distribution.setSha256(candidate.sha256())') &&
+    delivery.includes('distribution.setBytesize(candidate.byteSize())'))
 }
 
 function publication(model) {
@@ -143,7 +146,7 @@ function publication(model) {
   const source = java('delivery/DeliveryService')
   const complete = source.slice(source.indexOf('public State complete'))
   const lock = complete.indexOf('lockSubmissionTarget(context, id)')
-  const compare = complete.indexOf('input.baseVersionId()')
+  const compare = complete.indexOf('Objects.equals(id(row.getBaseversion1()), id(issue.getCurrentversion1()))')
   const publish = complete.indexOf('issue.setCurrentversion1(version)')
   assert(lock >= 0 && compare > lock && publish > compare)
   assert(complete.includes('row.setAstatus("accepted")'))
