@@ -8,7 +8,7 @@ views {
 
   view V02 of di {
     title 'Technische Container'
-    description 'Zehn laufende Dienste. Die gemeinsame PostgreSQL-Instanz hält getrennte logische Datenbanken.'
+    description 'Zehn Dienste im Integrationsmodus. Im Hostmodus laufen neun davon in Compose und Admin auf macOS. PostgreSQL hält getrennte logische Datenbanken.'
     include di.*
     exclude di.jenkins -> di.keycloak
     exclude di.admin -> di.keycloak
@@ -82,8 +82,8 @@ views {
 
   deployment view V07 {
     title 'Lokales Deployment'
-    description 'Compose auf dem Entwicklungsrechner. Die Hostports, Volumes und logischen Datenbanken stehen an den Instanzen und im Betriebsnachweis.'
+    description 'Compose auf dem Entwicklungsrechner. Pro Instanz läuft Admin entweder in Compose oder auf macOS.'
     includeAncestors true
-    include local.compose.*
+    include local.compose.*, local.host.*
   }
 }

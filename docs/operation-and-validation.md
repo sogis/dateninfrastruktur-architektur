@@ -1,13 +1,13 @@
 # Lokaler Betrieb und Prüfung
 
-Der [Entwicklungsstack](../../dateninfrastruktur-dev-stack/README.md) betreibt zehn dauerhafte Dienste in einem Compose-Projekt. Setup- und Testprofile sind explizite Werkzeuge. PostgreSQL, Garage, Admin, Sodata, Jenkins und der Origin verwenden interne Dienstadressen.
+Der [Entwicklungsstack](../../dateninfrastruktur-dev-stack/docs/operations.md) betreibt im Integrationsmodus zehn Dienste in einem Compose-Projekt. Setup- und Testprofile sind explizite Werkzeuge.
 
-`dev.sh admin on` ersetzt den laufenden Admin-Dienst im selben Compose-Projekt
-durch Gradle `bootRun`. APISIX nutzt auch in diesem Modus `admin:8080` für
-Management, CSS und die Download-Autorisierungsprüfung. Der Container liest CSS
-und JTE aus dem Checkout. Erfolgreich kompilierte Java-Änderungen starten den
-Spring-Anwendungskontext neu. `dev.sh admin off` stellt das zuvor verwendete
-Image wieder her.
+Im Hostmodus startet Compose neun Dienste aus veröffentlichten Images.
+Admin läuft per `bootRun` oder aus der IDE auf `127.0.0.1:8080` und liest
+CSS und JTE aus dem Admin-Checkout. Kompilierte Java-Änderungen übernimmt
+Spring Boot DevTools. APISIX und Jenkins erreichen `admin:8080` über
+`admin:host-gateway`. Das Compose-Projekt und seine Named Volumes gehören
+zu derselben lokalen Instanz.
 
 | Loopback-Port des lokalen Rechners | Standardziel im Container |
 | --- | --- |
@@ -15,6 +15,8 @@ Image wieder her.
 | `127.0.0.1:18080` | Keycloak `8080` |
 | `127.0.0.1:18088` | Superset `8088` |
 | `127.0.0.1:18123` und `127.0.0.1:19000` | ClickHouse `8123` und `9000` |
+| `127.0.0.1:15432` im Hostmodus | PostgreSQL `5432` |
+| `127.0.0.1:18090` im Hostmodus | Origin `8080` |
 
 Benannte Volumes speichern PostgreSQL, Garage-Daten und -Metadaten, Jenkins-Home, ClickHouse-Daten und -Logs sowie Superset-Home. Private Runtime-Dateien liefern gerenderte Konfiguration und explizite lokale Zugangsdaten. Der Origin bindet seine rclone-Konfiguration read-only ein.
 

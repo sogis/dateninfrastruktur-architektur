@@ -32,15 +32,22 @@
         },
         {
           "repo_id": "stack",
-          "path": "scripts/compose_operations.py",
+          "path": "scripts/compose_runtime.py",
           "selector": {
             "kind": "python-symbol",
-            "name": "select_images"
+            "name": "init_context"
           }
         },
         {
           "repo_id": "jenkins",
           "path": "bin/build-image.sh",
+          "selector": {
+            "kind": "file"
+          }
+        },
+        {
+          "repo_id": "stack",
+          "path": "compose.gretl-dev.yaml",
           "selector": {
             "kind": "file"
           }
@@ -75,29 +82,24 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.admin-dev.yaml",
+          "path": "compose.host-admin.yaml",
           "selector": {
-            "kind": "json-key",
-            "keys": [
-              "services",
-              "admin"
-            ]
+            "kind": "file"
           }
         },
         {
           "repo_id": "stack",
-          "path": "scripts/admin_development.py",
+          "path": "scripts/compose_runtime.py",
           "selector": {
             "kind": "python-symbol",
-            "name": "switch_admin"
+            "name": "admin_host_config"
           }
         },
         {
           "repo_id": "admin",
-          "path": "scripts/dev_reload.py",
+          "path": "src/main/resources/application-host-dev.properties",
           "selector": {
-            "kind": "python-symbol",
-            "name": "main"
+            "kind": "file"
           }
         },
         {
@@ -191,7 +193,7 @@
           "path": "scripts/compose_runtime.py",
           "selector": {
             "kind": "python-symbol",
-            "name": "render"
+            "name": "render_gateway"
           }
         }
       ],
@@ -524,10 +526,9 @@
         },
         {
           "repo_id": "stack",
-          "path": "scripts/compose_runtime.py",
+          "path": "services/garage/setup-compose.py",
           "selector": {
-            "kind": "python-symbol",
-            "name": "render"
+            "kind": "file"
           }
         }
       ],
