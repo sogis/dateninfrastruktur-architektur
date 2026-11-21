@@ -2,44 +2,41 @@
   "schema_version": 1,
   "verified_source_set": {
     "schema_version": 1,
-    "workspace": "58c30cf08ca5482aa4f839027a5a3e74bc9a1d3a",
+    "workspace": "14e637821acf137c40fa71705c1a3879cc0dfbdc",
     "products": {
-      "admin": "066bd8509435edfd4532251db879132d752e4378",
-      "jenkins": "f24d067e4ac6f522cf4ab9377a57299b7c15681a",
-      "plugin": "fba780cb6f45781a2f8c7784c5ce2abfab779dc2",
+      "admin": "b6920200b5309b59f3ac23e97206fb7f55f06525",
+      "jenkins": "ac7429527a57dab15717275607dfa786e7f734d4",
+      "plugin": "7a857a1d0b761dc4062796e131b35c4bf4470674",
       "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-      "stack": "e78ca05fda0643d3744885fe7c0ae752a97d7e93",
+      "stack": "ba765ee44d2d4850412a3f3f21851dc93f63aa02",
       "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
-  "verified_model_sha256": "6bf3ad7f9dac0f87e4bc4e7fc23b266a3fa3806418c8bf8188d4a029d34a2eb8",
-  "verified_at": "2026-11-21T06:12:55.781Z",
-  "evidence_sha256": "aa97616e255cdc6c54ff8fce9df0aef4e4a8fe690c90ee6556cb9a4db55ef5c8",
+  "verified_model_sha256": "6612a52e58966c1a67d743111759d96579a91df527eebfa687887d1d2b22b6b6",
+  "verified_at": "2026-11-21T11:39:39.795Z",
+  "evidence_sha256": null,
   "coverage": [
     "source-checked",
-    "configuration-checked",
-    "DYN-DOWNLOAD",
-    "DYN-RIGHTS",
-    "DYN-INGESTION"
+    "configuration-checked"
   ],
   "observed_source_set": {
     "schema_version": 1,
     "workspace": "1643a89cf6ac010b19e2d714648784e7f96404d6",
     "products": {
-      "admin": "25d303eb4d2f08cc92b91421a7e032eaa480d8ed",
+      "admin": "b6920200b5309b59f3ac23e97206fb7f55f06525",
       "jenkins": "ac7429527a57dab15717275607dfa786e7f734d4",
       "plugin": "7a857a1d0b761dc4062796e131b35c4bf4470674",
       "sodata": "30178b8e965ed00a69b5e99c810861ff22e6c75c",
-      "stack": "b86905192edb02304c9c35c69b9c4e13b87f9842",
+      "stack": "ba765ee44d2d4850412a3f3f21851dc93f63aa02",
       "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
-  "observed_at": "2026-11-20T12:05:55.736Z",
+  "observed_at": "2026-11-21T11:39:45.234Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "44874353522",
-  "workflow_run_number": 85,
+  "run_id": "44900122579",
+  "workflow_run_number": 87,
   "workflow_run_attempt": 1
 }
