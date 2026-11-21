@@ -43,7 +43,7 @@ export function verifyRun(readLog: ReadLog) {
     assert.deepEqual(run.argv, argv, 'Unexpected runtime command')
     assert(typeof run.toolVersion === 'string' && run.toolVersion.length > 0)
     const paths = [script, 'scripts/compose_runtime.py', 'scripts/ingestion_test_runtime.py',
-      'scripts/test_management_bootstrap.py', 'compose.yaml']
+      'scripts/test_management_bootstrap.py', 'compose-test.yaml']
     if (check.file === 'public-catalog') {
       paths.push('services/apisix/routes.template.json', 'services/apisix/config.single.yaml',
         'services/apisix/dns-cache.lua')

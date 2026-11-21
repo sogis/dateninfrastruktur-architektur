@@ -1,8 +1,11 @@
 # Lokaler Betrieb und Prüfung
 
-Der [Entwicklungsstack](../../dateninfrastruktur-dev-stack/docs/operations.md) betreibt im Integrationsmodus zehn Dienste in einem Compose-Projekt. Setup- und Testprofile sind explizite Werkzeuge.
+Der [Entwicklungsstack](../../dateninfrastruktur-dev-stack/docs/operations.md)
+betreibt im Integrationsmodus zehn Dienste in einem Compose-Projekt mit
+`compose-test.yaml`. Setup- und Testprofile sind explizite Werkzeuge.
 
-Im Hostmodus startet Compose neun Dienste aus veröffentlichten Images.
+Im Hostmodus ergänzt `compose.yaml` die gemeinsame Dienstedefinition.
+Compose startet dann neun Dienste aus veröffentlichten Images.
 Admin läuft per `bootRun` oder aus der IDE auf `127.0.0.1:8080` und liest
 CSS und JTE aus dem Admin-Checkout. Kompilierte Java-Änderungen übernimmt
 Spring Boot DevTools. APISIX und Jenkins erreichen `admin:8080` über

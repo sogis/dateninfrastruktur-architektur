@@ -41,7 +41,7 @@ test('all initial invariants read current facts and report outstanding runtime e
 
 test('mutations of services, auth and upstream are rejected', async () => {
   const model = await modelAt()
-  const compose = JSON.parse(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))
+  const compose = JSON.parse(pinnedSource({ repo_id: 'stack', path: 'compose-test.yaml' }))
   compose.services.unbound = { image: 'synthetic-only' }
   assert.throws(() => compareTopology(model, extractComposeFacts(JSON.stringify(compose))), /Runtime service set differs/)
   const data = JSON.parse(pinnedSource({ repo_id: 'stack', path: 'services/apisix/routes.template.json' }))
@@ -81,9 +81,12 @@ test('selection follows direct and transitive inputs and labels unknown changes'
     'ARCH-MODEL-PERSISTENCE','ARCH-SCHEMA-VERIFY'].every(id => ids(schema).includes(id)))
   const identity = selectChecks([{ repo_id: 'admin', path: 'src/main/java/ch/so/agi/dateninfrastruktur/admin/identity/PrincipalRepository.java' }])
   assert(ids(identity).includes('ARCH-IDENTITY-GUARD'))
-  const compose = selectChecks([{ repo_id: 'stack', path: 'compose.yaml' }])
+  const compose = selectChecks([{ repo_id: 'stack', path: 'compose-test.yaml' }])
   assert(ids(compose).includes('ARCH-TOPOLOGY') && ids(compose).includes('ARCH-PG-BOUNDARY'))
   assert(!ids(compose).includes('ARCH-COMPOSE'))
+  const hostOverlay = selectChecks([{ repo_id: 'stack', path: 'compose.yaml' }])
+  assert.equal(hostOverlay.status, 'SELECTED')
+  assert(ids(hostOverlay).includes('ARCH-TOPOLOGY'))
   assert.deepEqual(ids(selectChecks([{ repo_id: 'architecture', path: 'docs/security.md' }])), ['ARCH-DOCS'])
   const unknown = selectChecks([{ repo_id: 'stack', path: 'unknown_binary' }])
   assert.equal(unknown.status, 'UNKNOWN')

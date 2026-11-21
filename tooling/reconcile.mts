@@ -100,7 +100,7 @@ export function classify(changes: Change[], policy: 'pass' | 'violation' | 'unkn
   if (selectChecks(relevant).status === 'UNKNOWN') return 'UNKNOWN'
   const represented = ({ repo_id, path }: Change) =>
     /^docs\/.*[.]md$|^README[.]md$/.test(path) ||
-    repo_id === 'stack' && ['compose.yaml', 'services/apisix/routes.template.json'].includes(path)
+    repo_id === 'stack' && ['compose-test.yaml', 'services/apisix/routes.template.json'].includes(path)
   if (relevant.every(represented)) return 'DOCUMENTATION_DRIFT'
   if (relevant.every(change => represented(change) || dependencyChecks(change).length > 0)) {
     return 'DEPENDENCY_DRIFT'
@@ -117,7 +117,7 @@ function inputFingerprint(candidate: SourceLock, workspace: string) {
 
 function checkPolicy(candidate: SourceLock, workspace: string) {
   const repos = resolveSources(candidate, workspace)
-  const compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }, repos))
+  const compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose-test.yaml' }, repos))
   const gateway = extractGatewayFacts(pinnedSource({ repo_id: 'stack', path: 'services/apisix/routes.template.json' }, repos))
   return { compose, gateway }
 }
@@ -236,7 +236,7 @@ async function createProposal(candidate: SourceLock, changes: Change[], facts, k
     const paths = ['docs/overview.md', 'docs/security.md', 'src/model/system.c4', 'src/model/deployment.c4',
       'src/views/architecture.c4', 'sources.lock.json']
     const inputs = paths.map(path => ({ path, contents: readFileSync(join(root, path), 'utf8') }))
-    const anchors = [...new Set(['stack:compose.yaml', 'stack:services/apisix/routes.template.json',
+    const anchors = [...new Set(['stack:compose-test.yaml', 'stack:services/apisix/routes.template.json',
       'workspace:repositories.json', ...changes.map(change => change.repo_id + ':' + change.path)])]
     const proposal = agent(inputs, {
       candidate, changes, runtimeServices: Object.fromEntries(Object.entries(facts.compose.services)

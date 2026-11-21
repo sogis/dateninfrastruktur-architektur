@@ -125,7 +125,7 @@ export function extractGatewayFacts(source: string) {
 }
 
 export function sourceFacts() {
-  const compose = pinnedSource({ repo_id: 'stack', path: 'compose.yaml' })
+  const compose = pinnedSource({ repo_id: 'stack', path: 'compose-test.yaml' })
   const routes = pinnedSource({ repo_id: 'stack', path: 'services/apisix/routes.template.json' })
   return { compose: extractComposeFacts(compose), gateway: extractGatewayFacts(routes),
     sourceHashes: { compose: sha256(compose), gateway: sha256(routes) } }
