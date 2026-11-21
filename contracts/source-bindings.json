@@ -12,7 +12,7 @@
       "sources": [
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -22,7 +22,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -71,7 +71,7 @@
       "sources": [
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -82,7 +82,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.host-admin.yaml",
+          "path": "compose.yaml",
           "selector": {
             "kind": "file"
           }
@@ -171,7 +171,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -225,7 +225,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -392,7 +392,7 @@
       "sources": [
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -403,7 +403,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -504,7 +504,7 @@
       "sources": [
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [
@@ -515,7 +515,7 @@
         },
         {
           "repo_id": "stack",
-          "path": "compose.yaml",
+          "path": "compose-test.yaml",
           "selector": {
             "kind": "json-key",
             "keys": [

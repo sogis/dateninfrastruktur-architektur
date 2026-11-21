@@ -45,7 +45,7 @@ test('only legitimate drift permits a bounded proposal', () => {
   assert.equal(classify([...dependencies, { repo_id: 'plugin', path: 'pom.xml' }], 'pass'), 'UNKNOWN')
   assert.equal(classify([{ repo_id: 'architecture', path: 'docs/published-evidence/sample.json' }], 'pass'), 'NO_CHANGE')
   const inputs = [{ path: 'docs/overview.md', contents: 'before' }, { path: 'contracts/invariants.json', contents: '{}' }]
-  const allowed = new Set(['stack:compose.yaml'])
+  const allowed = new Set(['stack:compose-test.yaml'])
   const safe = { path: 'docs/overview.md', beforeSha256: sha256('before'), newText: 'after', sources: [...allowed] }
   assert.equal(validateProposal({ changes: [safe] }, inputs, allowed).length, 1)
   for (const mutation of [
@@ -69,7 +69,7 @@ test('frozen Git drift proposes once and a policy violation never calls the agen
       git(join(temp, row.path), 'checkout', '-q', '--detach', lock.products[row.id])
     }
     const stack = join(temp, repositories.find(row => row.id === 'stack').path)
-    const compose = join(stack, 'compose.yaml')
+    const compose = join(stack, 'compose-test.yaml')
     const text = await readFile(compose, 'utf8')
     const commit = (...paths) => {
       git(stack, 'add', '--', ...paths)
@@ -95,7 +95,7 @@ test('frozen Git drift proposes once and a policy violation never calls the agen
     assert(text.includes('127.0.0.1:'))
     const port = text.replace('127.0.0.1:', '[::1]:')
     await writeFile(compose, port)
-    const drift = commit('compose.yaml')
+    const drift = commit('compose-test.yaml')
     const proposalDirectory = join(temp, 'proposals')
     let calls = 0
     const agent = (files, facts) => {
@@ -107,7 +107,7 @@ test('frozen Git drift proposes once and a policy violation never calls the agen
           '\nIm Prüfbeispiel lauscht der Dienst auf der IPv6-Loopbackadresse.\n' },
         { path: 'sources.lock.json', newText: JSON.stringify(drift) }
       ].map(change => ({ ...change, beforeSha256: sha256(files.find(file => file.path === change.path).contents),
-        sources: ['stack:compose.yaml'] }))
+        sources: ['stack:compose-test.yaml'] }))
       return { replacements, changes: [], patch: 'fixture-patch', tool: 'stubbed transport' }
     }
     const execute = candidate => reconcile(candidate, normalizedEvent(null, 'local'), join(temp, 'status.json'),
@@ -122,13 +122,13 @@ test('frozen Git drift proposes once and a policy violation never calls the agen
     assert.equal(calls, 1)
 
     await writeFile(compose, text.replace('127.0.0.1:', '0.0.0.0:'))
-    const violation = await execute(commit('compose.yaml'))
+    const violation = await execute(commit('compose-test.yaml'))
     assert.equal(violation.comparison_status, 'VIOLATION')
     assert(violation.findings.some(finding => finding.check === 'ARCH-TOPOLOGY' &&
-      finding.sources.includes('stack:compose.yaml')))
+      finding.sources.includes('stack:compose-test.yaml')))
     await writeFile(join(stack, 'unmapped-architecture-fixture.txt'), 'fixture\n')
     await writeFile(compose, port)
-    const unknown = await execute(commit('compose.yaml', 'unmapped-architecture-fixture.txt'))
+    const unknown = await execute(commit('compose-test.yaml', 'unmapped-architecture-fixture.txt'))
     assert.equal(unknown.comparison_status, 'NOT_VERIFIABLE')
     assert.equal(unknown.decision, 'UNKNOWN')
     assert.equal(calls, 1)

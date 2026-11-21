@@ -34,7 +34,7 @@ export function assertDownloadBoundary(model) {
   'Gateway bypasses the download authorization or origin boundary')
 }
 
-export function checkArchitecture(model, compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose.yaml' }))) {
+export function checkArchitecture(model, compose = extractComposeFacts(pinnedSource({ repo_id: 'stack', path: 'compose-test.yaml' }))) {
   const running = Object.entries(compose.services).filter(([, service]) => service.classification === 'runtime').map(([name]) => 'di.' + name)
   const nodes = id => [...model.view(id).nodes()].map(node => node.id).sort()
   assert.deepEqual([...model.children('di')].map(node => node.id).sort(), running.sort())

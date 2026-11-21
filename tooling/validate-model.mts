@@ -84,10 +84,10 @@ function storage(facts) {
 export function policyFindings(facts) {
   const checks = [
     ['ARCH-DOWNLOAD-CONFIG', 'stack:services/apisix/routes.template.json', () => assertDownloadConfig(facts.gateway)],
-    ['ARCH-PG-BOUNDARY', 'stack:compose.yaml', () => postgres(facts.compose)],
-    ['ARCH-PUBLIC-CATALOG', 'stack:compose.yaml, stack:services/apisix/routes.template.json', () => publicCatalog(facts)],
-    ['ARCH-STORAGE', 'stack:compose.yaml', () => storage(facts)],
-    ['ARCH-TOPOLOGY', 'stack:compose.yaml', () => assert(Object.values(facts.compose.services)
+    ['ARCH-PG-BOUNDARY', 'stack:compose-test.yaml', () => postgres(facts.compose)],
+    ['ARCH-PUBLIC-CATALOG', 'stack:compose-test.yaml, stack:services/apisix/routes.template.json', () => publicCatalog(facts)],
+    ['ARCH-STORAGE', 'stack:compose-test.yaml', () => storage(facts)],
+    ['ARCH-TOPOLOGY', 'stack:compose-test.yaml', () => assert(Object.values(facts.compose.services)
       .flatMap(service => service.ports).every(port => port.host === '127.0.0.1' || port.host === '[::1]'))]
   ] as const
   return checks.flatMap(([check, sources, run]) => {
