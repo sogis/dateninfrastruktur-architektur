@@ -13,7 +13,7 @@
     }
   },
   "verified_model_sha256": "6612a52e58966c1a67d743111759d96579a91df527eebfa687887d1d2b22b6b6",
-  "verified_at": "2026-11-23T13:33:52.425Z",
+  "verified_at": "2026-11-24T14:11:22.685Z",
   "evidence_sha256": null,
   "coverage": [
     "source-checked",
@@ -31,12 +31,12 @@
       "topics": "e705852995ab26d0cf4b9ddb3f188e89caf316ff"
     }
   },
-  "observed_at": "2026-11-23T13:33:57.455Z",
+  "observed_at": "2026-11-24T14:11:28.738Z",
   "observed_coverage": [],
   "comparison_status": "NOT_VERIFIABLE",
   "comparison_source": "remote-branches",
   "error": "OBSERVATION_UNAVAILABLE",
-  "run_id": "45185084666",
-  "workflow_run_number": 96,
+  "run_id": "45411223288",
+  "workflow_run_number": 97,
   "workflow_run_attempt": 1
 }
